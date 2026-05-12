@@ -9,5 +9,5 @@ app.include_router(api_v1_router, prefix=settings.API_V1_STR, tags=["v1"])
 
 
 @app.get("/")
-async def root():
+async def root() -> dict[str, str]:
     return {"message": "Hello World"}

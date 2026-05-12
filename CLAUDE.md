@@ -20,7 +20,7 @@ Claude acts as a **mentor**, not a code writer. The developer writes the code; C
 
 Code quality bar: **enterprise-level**. Every decision (structure, naming, patterns, configs) should follow best practices for the given technology. If something is done "the wrong way" — point it out even if it works.
 
-Commit discipline: remind the developer to commit at logical checkpoints — when a cohesive unit of work is complete (e.g. model done, schemas done, endpoint done). Use Conventional Commits format: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`. Each commit = one concern.
+Commit discipline: remind the developer to commit at logical checkpoints — when a cohesive unit of work is complete (e.g. model done, schemas done, endpoint done). Use Conventional Commits format: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`. For monorepo use scope: `feat(backend):`, `feat(frontend):`. Each commit = one concern.
 
 ## Tech Stack
 
@@ -38,10 +38,10 @@ Commit discipline: remind the developer to commit at logical checkpoints — whe
 
 ## Architecture
 
-Microservices:
+Microservices in a monorepo:
 - `frontend/` — React SPA
 - `backend/` — FastAPI (API gateway + business logic)
-- AI service — separate microservice for recommendations
+- AI service — separate microservice for recommendations (future)
 - PostgreSQL + Redis
 
 ## Project Structure
@@ -50,17 +50,40 @@ Microservices:
 hikkin-dom/
   backend/
     app/
-      main.py       # Application entrypoint
-    .venv/          # Python 3.14.4 virtual environment
-  frontend/         # Not yet initialized
+      api/
+        routes/
+          users.py      # /api/v1/users
+          survey.py     # /api/v1/survey
+          recommend.py  # /api/v1/recommend
+        main.py         # api_v1_router aggregator
+      core/
+        config.py       # Pydantic Settings (env vars, DB URL)
+        db.py           # SQLAlchemy engine + session maker
+      models/
+        base.py         # DeclarativeBase, shared type annotations (int_pk, str_uniq, etc.)
+        user.py         # User ORM model
+      schemas/
+        user.py         # Pydantic schemas (UserCreate, UserRead, UserUpdate)
+      services/         # Business logic layer
+      main.py           # FastAPI app entrypoint
+    alembic/            # DB migrations (to be configured)
+    alembic.ini
+    pyproject.toml
+    requirements.txt
+    .venv/              # Python 3.14.4 virtual environment
+  frontend/             # Not yet initialized
+  docs/
+    PLAN.md             # Full product plan
+  .env                  # Environment variables (not committed)
+  .gitignore
 ```
 
 ## Development Roadmap
 
 | Stage | Description | Status |
 |---|---|---|
-| 1 | Planning: AniList API research, project structure, repo setup | **Current** |
-| 2 | Backend MVP: /survey and /recommend endpoints, AniList integration | Planned |
+| 1 | Planning: Shikimori API research, project structure, repo setup | **Done** |
+| 2 | Backend MVP: /survey and /recommend endpoints, Shikimori integration | **Current** |
 | 3 | Frontend MVP: React survey form + recommendations page | Planned |
 | 4 | Testing + launch: deploy, community feedback | Planned |
 | 5 | Extensions: JWT auth, ML model, WebSocket chat, mobile | Future |
@@ -82,6 +105,19 @@ Streaming platform for anime with built-in chat where viewers vote on next episo
 ### 5. Anime Quiz Bot with Social Tournaments
 Telegram/Discord bot or web app with anime quizzes (characters, plots, memes). Team tournaments with AI-generated questions and rewards (virtual badges). Integrated with anime release calendar. Russian questions and local memes.
 > Tech to explore: Telegram API, ML for question generation, WebSockets for real-time updates, leaderboard DB, external API integrations.
+
+## Key Decisions
+
+- **SQLAlchemy + Pydantic separately** (not SQLModel) — cleaner separation between DB models and API schemas
+- **`models/base.py`** holds `Base`, `DeclarativeBase` and shared type annotations (`int_pk`, `str_uniq`)
+- **`core/db.py`** holds only engine and session maker — no model logic
+- **`api/routes/`** instead of `routers/` — follows FastAPI full-stack template pattern
+- **`api_v1_router`** aggregates all routes, prefix `/api/v1` set in `main.py` via `settings.API_V1_STR`
+- **Alembic at `backend/` root** — correct placement, not inside `app/`
+- **`UserUpdate` has no password fields** — password change is a separate flow (`UserChangePassword`)
+- **`UserPasswordMixin`** handles password validation (min 8 chars, match check) — used only in `UserCreate`
+- **Monorepo** — backend + frontend in one repo, can split later via `git subtree split`
+- **Shikimori API** chosen over AniList for Russian titles and CIS audience
 
 ## Backend
 
