@@ -9,10 +9,10 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int_pk]
-    first_name: Mapped[str | None]
-    last_name: Mapped[str | None]
-    date_of_birth: Mapped[date | None]
     email: Mapped[str_uniq]
     username: Mapped[str_uniq]
     hashed_password: Mapped[str]
+    first_name: Mapped[str | None]
+    last_name: Mapped[str | None]
+    date_of_birth: Mapped[date | None]
     is_active: Mapped[bool] = mapped_column(default=True)

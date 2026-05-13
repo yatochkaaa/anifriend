@@ -1,7 +1,7 @@
-from datetime import date
-from typing_extensions import Self
+from datetime import date, datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, model_validator
+from typing_extensions import Self
 
 
 class UserPasswordMixin:
@@ -18,14 +18,14 @@ class UserPasswordMixin:
 
 
 class UserBase(BaseModel):
+    email: EmailStr
+    username: str
     first_name: str | None = None
     last_name: str | None = None
     date_of_birth: date | None = None
-    email: EmailStr
-    username: str
 
 
-class UserCreate(UserBase, UserPasswordMixin):
+class UserCreate(UserPasswordMixin, UserBase):
     pass
 
 
@@ -33,8 +33,13 @@ class UserRead(UserBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
     is_active: bool
+    created_at: datetime
+    updated_at: datetime
 
 
-class UserUpdate(UserBase):
+class UserUpdate(BaseModel):
     email: EmailStr | None = None
     username: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    date_of_birth: date | None = None
