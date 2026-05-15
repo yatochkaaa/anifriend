@@ -1,7 +1,7 @@
 from datetime import date, datetime
+from typing import Self
 
 from pydantic import BaseModel, ConfigDict, EmailStr, model_validator
-from typing_extensions import Self
 
 
 class UserPasswordMixin:
