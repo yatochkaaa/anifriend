@@ -21,4 +21,5 @@ class SurveyRead(SurveyBase):
     updated_at: datetime
 
 
-SurveyUpdate = SurveyCreate
+class SurveyUpdate(SurveyBase):
+    pass
