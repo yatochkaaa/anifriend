@@ -1,11 +1,17 @@
+import typing
 from datetime import date
 
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base, int_pk, str_uniq
+from .base import Base, int_pk, str_uniq
+
+if typing.TYPE_CHECKING:
+    from . import Survey, WatchedAnime
 
 
 class User(Base):
+    """Registered application user."""
+
     __tablename__ = "users"
 
     id: Mapped[int_pk]
@@ -16,3 +22,6 @@ class User(Base):
     last_name: Mapped[str | None]
     date_of_birth: Mapped[date | None]
     is_active: Mapped[bool] = mapped_column(default=True)
+
+    survey: Mapped["Survey | None"] = relationship(back_populates="user")
+    watched_animes: Mapped[list["WatchedAnime"]] = relationship(back_populates="user")
