@@ -10,10 +10,10 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 int_pk = Annotated[int, mapped_column(primary_key=True)]
 str_uniq = Annotated[str, mapped_column(String(255), unique=True, nullable=False)]
 int_uniq = Annotated[int, mapped_column(unique=True, nullable=False)]
-created_at = Annotated[
+datetime_created = Annotated[
     datetime, mapped_column(DateTime(timezone=True), server_default=func.now())
 ]
-updated_at = Annotated[
+datetime_updated = Annotated[
     datetime,
     mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
@@ -28,5 +28,5 @@ def IntrospectedEnum(enum_cls: type[StrEnum], **kwargs) -> sa.Enum:
 class Base(AsyncAttrs, DeclarativeBase):
     __abstract__ = True
 
-    created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
+    created_at: Mapped[datetime_created]
+    updated_at: Mapped[datetime_updated]
