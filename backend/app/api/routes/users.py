@@ -1,13 +1,13 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, HTTPException, status
 
 from app.api.deps import SessionDep
 from app.core.security import get_password_hash
 from app.dto import UserCreateDTO, UserUpdateDTO
-from app.schemas.user import UserCreate, UserUpdate, UserRead
-from app.services.user import (
-    get_users,
-    get_user_by_id,
+from app.schemas import UserCreate, UserRead, UserUpdate
+from app.services import (
     add_user,
+    get_user_by_id,
+    get_users,
     modify_user,
     remove_user,
 )

@@ -1,0 +1,1 @@
+from .shikimori import ShikimoriClient

@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, status
 from app.api.deps import SessionDep
 from app.dto import SurveyCreateDTO, SurveyUpdateDTO
 from app.schemas import SurveyCreate, SurveyRead, SurveyUpdate
-from app.services.survey import add_survey, get_survey, modify_survey
+from app.services import add_survey, get_survey, modify_survey
 
 router = APIRouter(prefix="/survey", tags=["survey"])
 
