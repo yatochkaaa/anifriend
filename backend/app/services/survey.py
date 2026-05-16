@@ -45,6 +45,45 @@ def gather_survey_read_dto(
     }
 
 
+def gather_survey_read_dto_from_orm(db_survey: Survey) -> SurveyReadDTO:
+    genres_prefer = [genre.genre_id for genre in db_survey.genres if genre.is_liked]
+    genres_avoid = [genre.genre_id for genre in db_survey.genres if not genre.is_liked]
+    animes_prefer = [anime.shikimori_anime_id for anime in db_survey.animes]
+    characters_prefer = [
+        character.shikimori_character_id for character in db_survey.characters
+    ]
+
+    return {
+        "id": db_survey.id,
+        "user_id": db_survey.user_id,
+        "created_at": db_survey.created_at,
+        "updated_at": db_survey.updated_at,
+        "genres_prefer": genres_prefer,
+        "genres_avoid": genres_avoid,
+        "animes_prefer": animes_prefer,
+        "characters_prefer": characters_prefer,
+    }
+
+
+async def get_survey(session: AsyncSession) -> SurveyReadDTO | None:
+    survey_result = await session.execute(
+        select(Survey)
+        #  TODO: replace with current user from JWT
+        .where(Survey.user_id == 1)
+        .options(
+            selectinload(Survey.genres),
+            selectinload(Survey.animes),
+            selectinload(Survey.characters),
+        )
+    )
+    db_survey = survey_result.scalar_one_or_none()
+
+    if db_survey is None:
+        return None
+
+    return gather_survey_read_dto_from_orm(db_survey)
+
+
 async def add_survey(session: AsyncSession, dto: SurveyCreateDTO) -> SurveyReadDTO:
     genres = gather_survey_genres(dto["genres_prefer"], dto["genres_avoid"])
     animes = gather_survey_animes(dto["animes_prefer"])
@@ -68,7 +107,7 @@ async def modify_survey(
     animes = gather_survey_animes(dto["animes_prefer"])
     characters = gather_survey_characters(dto["characters_prefer"])
 
-    db_survey = await session.execute(
+    survey_result = await session.execute(
         select(Survey)
         .where(Survey.user_id == dto["user_id"])
         .options(
@@ -77,7 +116,7 @@ async def modify_survey(
             selectinload(Survey.characters),
         )
     )
-    db_survey = db_survey.scalar_one_or_none()
+    db_survey = survey_result.scalar_one_or_none()
 
     if db_survey is None:
         return None

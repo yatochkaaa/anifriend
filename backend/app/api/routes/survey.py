@@ -3,9 +3,21 @@ from fastapi import APIRouter, HTTPException, status
 from app.api.deps import SessionDep
 from app.dto import SurveyCreateDTO, SurveyUpdateDTO
 from app.schemas import SurveyCreate, SurveyRead, SurveyUpdate
-from app.services.survey import add_survey, modify_survey
+from app.services.survey import add_survey, get_survey, modify_survey
 
 router = APIRouter(prefix="/survey", tags=["survey"])
+
+
+@router.get("/")
+async def read_survey(session: SessionDep) -> SurveyRead:
+    survey = await get_survey(session)
+
+    if survey is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Survey not found"
+        )
+
+    return SurveyRead.model_validate(survey)
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
