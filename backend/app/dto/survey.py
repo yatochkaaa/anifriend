@@ -14,7 +14,7 @@ class SurveyCreateDTO(SurveyBaseDTO):
 
 
 class SurveyUpdateDTO(SurveyBaseDTO):
-    pass
+    user_id: int
 
 
 class SurveyReadDTO(SurveyBaseDTO):

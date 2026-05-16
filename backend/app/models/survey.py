@@ -17,7 +17,13 @@ class Survey(Base):
     id: Mapped[int_pk]
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True)
 
-    animes: Mapped[list["SurveyAnime"]] = relationship(back_populates="survey")
-    characters: Mapped[list["SurveyCharacter"]] = relationship(back_populates="survey")
-    genres: Mapped[list["SurveyGenre"]] = relationship(back_populates="survey")
+    animes: Mapped[list["SurveyAnime"]] = relationship(
+        back_populates="survey", cascade="all, delete-orphan"
+    )
+    characters: Mapped[list["SurveyCharacter"]] = relationship(
+        back_populates="survey", cascade="all, delete-orphan"
+    )
+    genres: Mapped[list["SurveyGenre"]] = relationship(
+        back_populates="survey", cascade="all, delete-orphan"
+    )
     user: Mapped["User"] = relationship(back_populates="survey")
