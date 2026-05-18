@@ -27,7 +27,8 @@ Commit discipline: remind the developer to commit at logical checkpoints — whe
 | Layer | Technology |
 |---|---|
 | Backend | Python 3.14 + FastAPI |
-| Frontend | React + TypeScript |
+| Frontend | Next.js 15 + TypeScript + Tailwind CSS |
+| Package Manager (frontend) | Bun |
 | Database | PostgreSQL + Redis (cache) |
 | AI/ML | Scikit-learn → Hugging Face Transformers |
 | External API | Shikimori API (русские названия, СНГ-аудитория) |
@@ -39,7 +40,7 @@ Commit discipline: remind the developer to commit at logical checkpoints — whe
 ## Architecture
 
 Microservices in a monorepo:
-- `frontend/` — React SPA
+- `frontend/` — Next.js 15 App Router (SSR + Client Components)
 - `backend/` — FastAPI (API gateway + business logic)
 - AI service — separate microservice for recommendations (future)
 - PostgreSQL + Redis
@@ -55,25 +56,41 @@ hikkin-dom/
           users.py      # /api/v1/users
           survey.py     # /api/v1/survey
           recommend.py  # /api/v1/recommend
+        deps.py         # FastAPI dependencies (SessionDep, ShikimoriDep)
         main.py         # api_v1_router aggregator
       core/
         config.py       # Pydantic Settings (env vars, DB URL)
-        db.py           # SQLAlchemy engine + session maker
+        db.py           # SQLAlchemy async engine + session maker
+      dto/              # TypedDict DTOs (boundary between routes and services)
+      integrations/
+        shikimori.py    # ShikimoriClient, ShikimoriAnime, ShikimoriGenre models
       models/
-        base.py         # DeclarativeBase, shared type annotations (int_pk, str_uniq, etc.)
+        base.py         # DeclarativeBase, shared type aliases (int_pk, IntrospectedEnum)
         user.py         # User ORM model
+        survey.py       # Survey, SurveyGenre, SurveyAnime, SurveyCharacter
+        genre.py        # Genre ORM model + GenreKindEnum
+        watched_anime.py # WatchedAnime + WatchedAnimeStatus
       schemas/
-        user.py         # Pydantic schemas (UserCreate, UserRead, UserUpdate)
-      services/         # Business logic layer
-      main.py           # FastAPI app entrypoint
-    alembic/            # DB migrations (to be configured)
+        user.py         # UserCreate, UserRead, UserUpdate
+        survey.py       # SurveyCreate, SurveyRead, SurveyUpdate
+        anime.py        # AnimeRead, PosterRead
+      services/
+        survey.py       # get_survey, add_survey, modify_survey
+        recommend.py    # get_recommendations
+      main.py           # FastAPI app entrypoint + lifespan (ShikimoriClient)
+    scripts/
+      seed_genres.py    # Seeds genres from Shikimori API into DB
+    alembic/            # DB migrations
     alembic.ini
     pyproject.toml
-    requirements.txt
     .venv/              # Python 3.14.4 virtual environment
-  frontend/             # Not yet initialized
-  docs/
-    PLAN.md             # Full product plan
+  frontend/
+    app/
+      layout.tsx        # Root layout
+      page.tsx          # Home page
+      globals.css
+    next.config.ts
+    package.json        # Managed by Bun
   .env                  # Environment variables (not committed)
   .gitignore
 ```
@@ -83,8 +100,8 @@ hikkin-dom/
 | Stage | Description | Status |
 |---|---|---|
 | 1 | Planning: Shikimori API research, project structure, repo setup | **Done** |
-| 2 | Backend MVP: /survey and /recommend endpoints, Shikimori integration | **Current** |
-| 3 | Frontend MVP: React survey form + recommendations page | Planned |
+| 2 | Backend MVP: /survey and /recommend endpoints, Shikimori integration | **Done** |
+| 3 | Frontend MVP: Next.js survey form + recommendations page | **Current** |
 | 4 | Testing + launch: deploy, community feedback | Planned |
 | 5 | Extensions: JWT auth, ML model, WebSocket chat, mobile | Future |
 
@@ -108,16 +125,26 @@ Telegram/Discord bot or web app with anime quizzes (characters, plots, memes). T
 
 ## Key Decisions
 
+### Backend
 - **SQLAlchemy + Pydantic separately** (not SQLModel) — cleaner separation between DB models and API schemas
-- **`models/base.py`** holds `Base`, `DeclarativeBase` and shared type annotations (`int_pk`, `str_uniq`)
+- **`models/base.py`** holds `Base`, `DeclarativeBase`, shared type aliases (`int_pk`), and `IntrospectedEnum` helper
+- **`IntrospectedEnum`** — wraps `sa.Enum` with `values_callable` to store lowercase values (StrEnum + auto())
 - **`core/db.py`** holds only engine and session maker — no model logic
 - **`api/routes/`** instead of `routers/` — follows FastAPI full-stack template pattern
 - **`api_v1_router`** aggregates all routes, prefix `/api/v1` set in `main.py` via `settings.API_V1_STR`
+- **`ShikimoriClient`** stored in `app.state` via lifespan — single instance, connection pooling via httpx
+- **`ShikimoriDep` / `SessionDep`** in `api/deps.py` — typed FastAPI dependencies for DI
+- **DTO pattern** — services accept TypedDicts, Pydantic schemas only in routes
 - **Alembic at `backend/` root** — correct placement, not inside `app/`
-- **`UserUpdate` has no password fields** — password change is a separate flow (`UserChangePassword`)
-- **`UserPasswordMixin`** handles password validation (min 8 chars, match check) — used only in `UserCreate`
-- **Monorepo** — backend + frontend in one repo, can split later via `git subtree split`
-- **Shikimori API** chosen over AniList for Russian titles and CIS audience
+- **Shikimori API** via GraphQL — genre filter is AND logic, so parallel requests per genre via `asyncio.gather()`
+- **Shikimori IDs** are strings in API but stored/used as `int` — Pydantic coerces on validate
+- **`UserUpdate` has no password fields** — password change is a separate flow
+- **Monorepo** — backend + frontend in one repo
+
+### Frontend
+- **Next.js 15 App Router** — SSR, file-based routing, Server/Client Components
+- **Bun** — package manager and runtime (faster than npm/yarn)
+- **Tailwind CSS** — utility-first styling
 
 ## Backend
 
@@ -145,4 +172,19 @@ uvicorn app.main:app --reload
 
 ## Frontend
 
-Not yet initialized. Commands will be added here once the frontend is set up.
+**Framework:** Next.js 15 (App Router)
+**Package manager:** Bun
+
+Install dependencies:
+
+```powershell
+cd frontend
+bun install
+```
+
+Run the dev server:
+
+```powershell
+cd frontend
+bun dev
+```
