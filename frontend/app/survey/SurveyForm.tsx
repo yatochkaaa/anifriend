@@ -1,12 +1,14 @@
 'use client'
 
 import { z } from 'zod'
+import { useRouter } from 'next/navigation'
 import { Genre } from '@/types/genre'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ComponentProps } from 'react'
+import { createSurvey } from '@/lib/api/survey'
 
 interface SurveyFormProps {
   genres: Genre[]
@@ -35,6 +37,8 @@ const STATE_ICONS: Record<GenreState, string> = {
 }
 
 export default function SurveyForm({ genres }: SurveyFormProps) {
+  const router = useRouter()
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -72,8 +76,13 @@ export default function SurveyForm({ genres }: SurveyFormProps) {
     }
   }
 
-  const onSubmit = (data: FormData) => {
-    console.log(data)
+  const onSubmit = async (survey: FormData) => {
+    try {
+      await createSurvey(survey)
+      router.push('/recommendations')
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   return (
@@ -105,7 +114,7 @@ export default function SurveyForm({ genres }: SurveyFormProps) {
       </ul>
 
       <div>
-        <Button type="submit" className="ml-auto flex">
+        <Button type="submit" className="ml-auto flex" disabled={form.formState.isSubmitting}>
           Готово
         </Button>
       </div>
