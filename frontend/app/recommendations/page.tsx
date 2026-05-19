@@ -5,10 +5,14 @@ export default async function RecommendationsPage() {
   const recommendations = await getRecommendations()
 
   return (
-    <div>
-      <h1>Recommendations</h1>
-
+    <main className="mx-auto max-w-6xl px-4 py-12">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">Your recommendations</h1>
+        <p className="text-muted-foreground mt-2">
+          Based on your preferences, here are anime we think you&apos;ll enjoy.
+        </p>
+      </div>
       <RecommendationList animes={recommendations} />
-    </div>
+    </main>
   )
 }

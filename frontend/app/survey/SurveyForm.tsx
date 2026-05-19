@@ -1,14 +1,14 @@
 'use client'
 
-import { z } from 'zod'
-import { useRouter } from 'next/navigation'
-import { Genre } from '@/types/genre'
-import { useForm, useWatch } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { ComponentProps } from 'react'
 import { createSurvey } from '@/lib/api/survey'
+import { cn } from '@/lib/utils'
+import { Genre } from '@/types/genre'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
+import { ComponentProps } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
+import { z } from 'zod'
 
 interface SurveyFormProps {
   genres: Genre[]
@@ -87,6 +87,14 @@ export default function SurveyForm({ genres }: SurveyFormProps) {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-8">
+      <div>
+        <h2 className="text-lg font-semibold">Genres</h2>
+        <p className="text-muted-foreground text-sm">
+          Click once to mark as favorite ❤️, click again to mark as avoid 💀, click once more to
+          reset.
+        </p>
+      </div>
+
       <ul className="flex flex-wrap gap-2">
         {genres.map((genre) => {
           const state = getGenreState(genre.id)
@@ -98,7 +106,7 @@ export default function SurveyForm({ genres }: SurveyFormProps) {
                 variant={STATE_BG[state]}
                 onClick={() => toggleGenre(genre.id)}
               >
-                {genre.russian}
+                {genre.name}
                 <span
                   className={cn(
                     'absolute -top-1 -right-2 rotate-20 transition-opacity duration-300',
@@ -115,7 +123,7 @@ export default function SurveyForm({ genres }: SurveyFormProps) {
 
       <div>
         <Button type="submit" className="ml-auto flex" disabled={form.formState.isSubmitting}>
-          Готово
+          Submit
         </Button>
       </div>
     </form>

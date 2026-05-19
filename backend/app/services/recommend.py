@@ -7,6 +7,7 @@ from app.integrations.shikimori import ShikimoriAnime, ShikimoriClient
 from app.services.survey import get_survey
 
 DEFAULT_MIN_SCORE = 7
+DEFAULT_RECOMMENDATIONS_LIMIT = 20
 
 
 def _has_avoided_genre(anime: ShikimoriAnime, genres_avoid: set[int]) -> bool:
@@ -38,4 +39,4 @@ async def get_recommendations(
     ]
     filtered_anime.sort(key=lambda anime: anime.score or 0.0, reverse=True)
 
-    return filtered_anime
+    return filtered_anime[:DEFAULT_RECOMMENDATIONS_LIMIT]
