@@ -5,7 +5,7 @@ export default async function RecommendationsPage() {
   const recommendations = await getRecommendations()
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-12">
+    <main className="mx-auto w-full max-w-6xl px-4 py-12">
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Your recommendations</h1>
         <p className="text-muted-foreground mt-2">

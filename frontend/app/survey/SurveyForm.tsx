@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { createSurvey } from '@/lib/api/survey'
 import { cn } from '@/lib/utils'
-import { Genre } from '@/types/genre'
+import { Genre, GenreKind } from '@/types/genre'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { ComponentProps } from 'react'
@@ -21,7 +21,7 @@ const formSchema = z.object({
   characters_prefer: z.array(z.int()),
 })
 
-type FormData = z.infer<typeof formSchema>
+type SurveyFormValues = z.infer<typeof formSchema>
 type GenreState = 'prefer' | 'avoid' | 'neutral'
 
 const STATE_BG: Record<GenreState, NonNullable<ComponentProps<typeof Button>['variant']>> = {
@@ -36,10 +36,19 @@ const STATE_ICONS: Record<GenreState, string> = {
   neutral: '💀', // neutral uses '💀' as hidden placeholder to enable smooth opacity transition
 }
 
+const KIND_LABELS: Record<GenreKind, string> = {
+  demographic: 'Demographics',
+  genre: 'Genres',
+  theme: 'Themes',
+}
+
+const KIND_ORDER: GenreKind[] = ['demographic', 'genre', 'theme']
+
 export default function SurveyForm({ genres }: SurveyFormProps) {
   const router = useRouter()
+  const groupedGenres = Object.groupBy(genres, ({ kind }) => kind)
 
-  const form = useForm<FormData>({
+  const form = useForm<SurveyFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       genres_prefer: [],
@@ -76,7 +85,7 @@ export default function SurveyForm({ genres }: SurveyFormProps) {
     }
   }
 
-  const onSubmit = async (survey: FormData) => {
+  const onSubmit = async (survey: SurveyFormValues) => {
     try {
       await createSurvey(survey)
       router.push('/recommendations')
@@ -86,40 +95,41 @@ export default function SurveyForm({ genres }: SurveyFormProps) {
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-8">
-      <div>
-        <h2 className="text-lg font-semibold">Genres</h2>
-        <p className="text-muted-foreground text-sm">
-          Click once to mark as favorite ❤️, click again to mark as avoid 💀, click once more to
-          reset.
-        </p>
-      </div>
-
-      <ul className="flex flex-wrap gap-2">
-        {genres.map((genre) => {
-          const state = getGenreState(genre.id)
-          return (
-            <li key={genre.id}>
-              <Button
-                className="relative"
-                type="button"
-                variant={STATE_BG[state]}
-                onClick={() => toggleGenre(genre.id)}
-              >
-                {genre.name}
-                <span
-                  className={cn(
-                    'absolute -top-1 -right-2 rotate-20 transition-opacity duration-300',
-                    state === 'neutral' ? 'opacity-0' : 'opacity-100'
-                  )}
-                >
-                  {STATE_ICONS[state]}
-                </span>
-              </Button>
-            </li>
-          )
-        })}
-      </ul>
+    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-10">
+      {Object.entries(groupedGenres)
+        .sort(([a], [b]) => KIND_ORDER.indexOf(a as GenreKind) - KIND_ORDER.indexOf(b as GenreKind))
+        .map(([kind, kindGenres]) => (
+          <div key={kind} className="flex flex-col gap-3">
+            <h2 className="text-foreground/70 text-base font-semibold tracking-wide uppercase">
+              {KIND_LABELS[kind as GenreKind]}
+            </h2>
+            <ul className="flex flex-wrap gap-2">
+              {kindGenres?.map((genre) => {
+                const state = getGenreState(genre.id)
+                return (
+                  <li key={genre.id}>
+                    <Button
+                      className="relative"
+                      type="button"
+                      variant={STATE_BG[state]}
+                      onClick={() => toggleGenre(genre.id)}
+                    >
+                      {genre.name}
+                      <span
+                        className={cn(
+                          'absolute -top-1 -right-2 rotate-20 transition-opacity duration-300',
+                          state === 'neutral' ? 'opacity-0' : 'opacity-100'
+                        )}
+                      >
+                        {STATE_ICONS[state]}
+                      </span>
+                    </Button>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        ))}
 
       <div>
         <Button type="submit" className="ml-auto flex" disabled={form.formState.isSubmitting}>
