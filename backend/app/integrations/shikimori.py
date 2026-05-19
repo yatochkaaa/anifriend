@@ -1,5 +1,5 @@
 from httpx import AsyncClient
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.core.config import settings
 
@@ -12,7 +12,7 @@ class ShikimoriGenre(BaseModel):
 
 
 class ShikimoriPoster(BaseModel):
-    main_url: str | None = None
+    main_url: str | None = Field(None, alias="mainUrl")
 
 
 class ShikimoriAnime(BaseModel):
@@ -47,6 +47,7 @@ class ShikimoriClient:
                 query($genre: String, $limit: PositiveInt, $score: Int) {
                     animes(genre: $genre, limit: $limit, score: $score) {
                         id name russian score
+                        poster { mainUrl }
                         genres { id kind name russian }
                     }
                 }
