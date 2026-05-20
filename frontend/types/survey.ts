@@ -11,3 +11,10 @@ export interface Survey extends SurveyCreate {
   created_at: string
   updated_at: string
 }
+
+export interface SurveyFormData {
+  genresPrefer: number[]
+  genresAvoid: number[]
+  animesPrefer: number[]
+  charactersPrefer: number[]
+}

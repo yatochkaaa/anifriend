@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**AniFriend** — AI-driven anime recommender for the CIS audience (18-35 y.o.). Think of it as a "smart anime friend" — the app asks the user questions about their preferences (genres, studios, characters, mood) and AI analyzes them to recommend anime with explanations ("why this fits you").
+**AniFriend** — AI-driven anime recommender for the CIS audience. Think of it as a "smart anime friend" — the app asks the user questions about their preferences (genres, studios, characters, mood) and AI analyzes them to recommend anime with explanations ("why this fits you").
 
 **Key differentiators from existing services (MAL, AniList):**
 - Russian-language UX and Russian anime titles (via Shikimori API)
