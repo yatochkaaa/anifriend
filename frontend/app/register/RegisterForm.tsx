@@ -28,7 +28,7 @@ const formSchema = z
         'Password must contain at least one uppercase letter, one lowercase letter, and one number'
       ),
     repeatPassword: z.string().min(1, 'Please repeat your password'),
-    dateOfBirth: z.date(),
+    dateOfBirth: z.date({ error: 'Please select your date of birth' }),
   })
   .refine((data) => data.password === data.repeatPassword, {
     error: "Passwords don't match",
