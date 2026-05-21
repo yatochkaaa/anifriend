@@ -5,9 +5,12 @@ import { Calendar } from '@/components/ui/calendar'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { saveToken } from '@/lib/actions/auth'
+import { createUser } from '@/lib/api/auth'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar as CalendarIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -27,35 +30,43 @@ const formSchema = z
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/,
         'Password must contain at least one uppercase letter, one lowercase letter, and one number'
       ),
-    repeatPassword: z.string().min(1, 'Please repeat your password'),
+    passwordRepeat: z.string().min(1, 'Please repeat your password'),
     dateOfBirth: z.date({ error: 'Please select your date of birth' }),
   })
-  .refine((data) => data.password === data.repeatPassword, {
+  .refine((data) => data.password === data.passwordRepeat, {
     error: "Passwords don't match",
-    path: ['repeatPassword'],
+    path: ['passwordRepeat'],
   })
 
 type RegisterFormValues = z.infer<typeof formSchema>
 
 export default function RegisterForm() {
+  const router = useRouter()
   const {
     control,
     register,
     formState: { errors, isSubmitting },
     handleSubmit,
+    setError,
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
       username: '',
       password: '',
-      repeatPassword: '',
+      passwordRepeat: '',
       dateOfBirth: undefined,
     },
   })
 
   const onSubmit = async (data: RegisterFormValues) => {
-    console.log(data)
+    try {
+      const { accessToken } = await createUser(data)
+      await saveToken(accessToken)
+      router.push('/')
+    } catch (e) {
+      setError('root', { message: e instanceof Error ? e.message : 'Registration failed' })
+    }
   }
 
   return (
@@ -97,16 +108,16 @@ export default function RegisterForm() {
           {errors.password && <FieldError errors={[errors.password]} />}
         </Field>
 
-        <Field data-invalid={!!errors.repeatPassword}>
-          <FieldLabel htmlFor="repeat-password">Repeat password</FieldLabel>
+        <Field data-invalid={!!errors.passwordRepeat}>
+          <FieldLabel htmlFor="password-repeat">Repeat password</FieldLabel>
           <Input
-            {...register('repeatPassword')}
-            id="repeat-password"
+            {...register('passwordRepeat')}
+            id="password-repeat"
             type="password"
             placeholder="One more time, just to be sure"
-            aria-invalid={!!errors.repeatPassword}
+            aria-invalid={!!errors.passwordRepeat}
           />
-          {errors.repeatPassword && <FieldError errors={[errors.repeatPassword]} />}
+          {errors.passwordRepeat && <FieldError errors={[errors.passwordRepeat]} />}
         </Field>
 
         <Controller
@@ -146,6 +157,8 @@ export default function RegisterForm() {
           )}
         />
       </FieldGroup>
+
+      {errors.root && <p className="text-destructive text-sm">{errors.root.message}</p>}
 
       <Button type="submit" className="ml-auto flex" disabled={isSubmitting}>
         Join

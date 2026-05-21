@@ -47,7 +47,13 @@ const KIND_ORDER: GenreKind[] = ['demographic', 'genre', 'theme']
 export default function SurveyForm({ genres }: SurveyFormProps) {
   const router = useRouter()
 
-  const form = useForm<SurveyFormValues>({
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<SurveyFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       genresPrefer: [],
@@ -57,8 +63,8 @@ export default function SurveyForm({ genres }: SurveyFormProps) {
     },
   })
 
-  const preferGenres = useWatch({ control: form.control, name: 'genresPrefer' })
-  const avoidGenres = useWatch({ control: form.control, name: 'genresAvoid' })
+  const preferGenres = useWatch({ control, name: 'genresPrefer' })
+  const avoidGenres = useWatch({ control, name: 'genresAvoid' })
 
   const preferSet = useMemo(() => new Set(preferGenres), [preferGenres])
   const avoidSet = useMemo(() => new Set(avoidGenres), [avoidGenres])
@@ -77,18 +83,18 @@ export default function SurveyForm({ genres }: SurveyFormProps) {
   const toggleGenre = (genreId: number) => {
     const state = getGenreState(genreId)
     if (state === 'prefer') {
-      form.setValue(
+      setValue(
         'genresPrefer',
         preferGenres.filter((id) => id !== genreId)
       )
-      form.setValue('genresAvoid', [...avoidGenres, genreId])
+      setValue('genresAvoid', [...avoidGenres, genreId])
     } else if (state === 'avoid') {
-      form.setValue(
+      setValue(
         'genresAvoid',
         avoidGenres.filter((id) => id !== genreId)
       )
     } else {
-      form.setValue('genresPrefer', [...preferGenres, genreId])
+      setValue('genresPrefer', [...preferGenres, genreId])
     }
   }
 
@@ -97,12 +103,12 @@ export default function SurveyForm({ genres }: SurveyFormProps) {
       await createSurvey(survey)
       router.push('/recommendations')
     } catch (e) {
-      console.error(e)
+      setError('root', { message: e instanceof Error ? e.message : 'Create survey failed' })
     }
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-10">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-10">
       {genresByKind.map(({ kind, genres: kindGenres }) => (
         <div key={kind} className="flex flex-col gap-3">
           <h2 className="text-foreground/70 text-base font-semibold tracking-wide uppercase">
@@ -136,9 +142,11 @@ export default function SurveyForm({ genres }: SurveyFormProps) {
         </div>
       ))}
 
+      {errors.root && <p className="text-destructive text-sm">{errors.root.message}</p>}
+
       <div>
-        <Button type="submit" className="ml-auto flex" disabled={form.formState.isSubmitting}>
-          Submit
+        <Button type="submit" className="ml-auto flex" disabled={isSubmitting}>
+          Find my destiny
         </Button>
       </div>
     </form>
