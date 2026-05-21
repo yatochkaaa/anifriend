@@ -3,7 +3,7 @@ from datetime import date
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .base import Base, int_pk, str_uniq
+from .base import Base, int_pk, str_col, str_uniq
 
 if typing.TYPE_CHECKING:
     from . import Survey, WatchedAnime
@@ -14,7 +14,7 @@ class User(Base):
 
     id: Mapped[int_pk]
     email: Mapped[str_uniq]
-    username: Mapped[str_uniq]
+    username: Mapped[str_col]
     hashed_password: Mapped[str]
     first_name: Mapped[str | None]
     last_name: Mapped[str | None]

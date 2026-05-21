@@ -18,7 +18,7 @@ async def register(user: UserCreate, session: SessionDep) -> Token:
     hashed_password = get_password_hash(user.password)
     dto = UserCreateDTO(
         email=str(user.email).lower(),
-        username=user.username.lower(),
+        username=user.username,
         hashed_password=hashed_password,
         first_name=user.first_name,
         last_name=user.last_name,

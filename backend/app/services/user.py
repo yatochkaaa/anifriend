@@ -1,6 +1,6 @@
 from typing import Literal, Sequence
 
-from sqlalchemy import or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -26,7 +26,7 @@ async def authenticate(
     search_term = username_or_email.strip().lower()
 
     stmt = select(User).where(
-        or_(User.username == search_term, User.email == search_term)
+        or_(func.lower(User.username) == search_term, User.email == search_term)
     )
     result = await session.execute(stmt)
     db_user = result.scalar_one_or_none()

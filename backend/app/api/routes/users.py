@@ -39,7 +39,7 @@ async def create_user(user: UserCreate, session: SessionDep) -> UserRead:
     hashed_password = get_password_hash(user.password)
     dto = UserCreateDTO(
         email=str(user.email).lower(),
-        username=user.username.lower(),
+        username=user.username,
         hashed_password=hashed_password,
         first_name=user.first_name,
         last_name=user.last_name,
@@ -49,7 +49,7 @@ async def create_user(user: UserCreate, session: SessionDep) -> UserRead:
     try:
         created_user = await add_user(session, dto)
     except UserAlreadyExistsError:
-        raise HTTPException(status_code=409, detail="Email or username already taken")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email or username already taken")
 
     return UserRead.model_validate(created_user)
 
