@@ -1,17 +1,15 @@
 from datetime import date, datetime
-from typing import Self
+from typing import Annotated, Self
 
-from pydantic import BaseModel, ConfigDict, EmailStr, model_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 
 
 class UserPasswordMixin:
-    password: str
+    password: Annotated[str, Field(min_length=8, max_length=100)]
     password_repeat: str
 
     @model_validator(mode="after")
     def check_passwords_match(self) -> Self:
-        if len(self.password) < 8:
-            raise ValueError("Password must be at least 8 characters")
         if self.password != self.password_repeat:
             raise ValueError("Passwords do not match")
         return self

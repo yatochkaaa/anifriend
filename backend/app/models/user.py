@@ -10,8 +10,6 @@ if typing.TYPE_CHECKING:
 
 
 class User(Base):
-    """Registered application user."""
-
     __tablename__ = "users"
 
     id: Mapped[int_pk]

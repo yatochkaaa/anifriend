@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, status
 from app.api.deps import SessionDep
 from app.core.security import get_password_hash
 from app.dto import UserCreateDTO, UserUpdateDTO
+from app.exceptions import UserAlreadyExistsError
 from app.schemas import UserCreate, UserRead, UserUpdate
 from app.services import (
     add_user,
@@ -37,17 +38,18 @@ async def read_user(user_id: int, session: SessionDep) -> UserRead:
 async def create_user(user: UserCreate, session: SessionDep) -> UserRead:
     hashed_password = get_password_hash(user.password)
     dto = UserCreateDTO(
-        email=str(user.email),
-        username=user.username,
+        email=str(user.email).lower(),
+        username=user.username.lower(),
         hashed_password=hashed_password,
         first_name=user.first_name,
         last_name=user.last_name,
         date_of_birth=user.date_of_birth,
     )
-    created_user = await add_user(
-        session,
-        dto,
-    )
+
+    try:
+        created_user = await add_user(session, dto)
+    except UserAlreadyExistsError:
+        raise HTTPException(status_code=409, detail="Email or username already taken")
 
     return UserRead.model_validate(created_user)
 
