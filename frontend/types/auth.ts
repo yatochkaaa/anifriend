@@ -23,3 +23,8 @@ export interface UserCreateFormData {
   passwordRepeat: string
   dateOfBirth: Date
 }
+
+export interface UserLogin {
+  username: string
+  password: string
+}
