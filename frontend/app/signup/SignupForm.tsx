@@ -38,9 +38,9 @@ const formSchema = z
     path: ['passwordRepeat'],
   })
 
-type RegisterFormValues = z.infer<typeof formSchema>
+type SignupFormValues = z.infer<typeof formSchema>
 
-export default function RegisterForm() {
+export default function SignupForm() {
   const router = useRouter()
   const {
     control,
@@ -48,7 +48,7 @@ export default function RegisterForm() {
     formState: { errors, isSubmitting },
     handleSubmit,
     setError,
-  } = useForm<RegisterFormValues>({
+  } = useForm<SignupFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
@@ -59,11 +59,11 @@ export default function RegisterForm() {
     },
   })
 
-  const onSubmit = async (data: RegisterFormValues) => {
+  const onSubmit = async (data: SignupFormValues) => {
     try {
       const { accessToken } = await createUser(data)
       await saveToken(accessToken)
-      router.push('/')
+      router.push('/survey')
     } catch (e) {
       setError('root', { message: e instanceof Error ? e.message : 'Registration failed' })
     }

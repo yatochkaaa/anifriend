@@ -1,9 +1,9 @@
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
 import { Suspense } from 'react'
-import RegisterForm from './RegisterForm'
+import SignupForm from './SignupForm'
 
-export default async function RegisterPage() {
+export default async function SignupPage() {
   return (
     <main className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-md flex-col items-center justify-center gap-6 px-4 py-12">
       <div className="w-full">
@@ -14,7 +14,7 @@ export default async function RegisterPage() {
       </div>
       <Card className="w-full p-6">
         <Suspense>
-          <RegisterForm />
+          <SignupForm />
         </Suspense>
       </Card>
       <p className="text-muted-foreground text-sm">

@@ -17,7 +17,7 @@ export default async function LoginPage() {
       </Card>
       <p className="text-muted-foreground text-sm">
         Don&apos;t have an account?{' '}
-        <Link href="/register" className="text-foreground underline-offset-4 hover:underline">
+        <Link href="/signup" className="text-foreground underline-offset-4 hover:underline">
           Join the club
         </Link>
       </p>

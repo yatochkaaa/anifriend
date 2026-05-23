@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { saveToken } from '@/lib/actions/auth'
 import { login } from '@/lib/api/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -19,6 +19,7 @@ type LoginFormValues = z.infer<typeof formSchema>
 
 export default function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const {
     register,
     formState: { errors, isSubmitting },
@@ -36,7 +37,9 @@ export default function LoginForm() {
     try {
       const { accessToken } = await login(data)
       await saveToken(accessToken)
-      router.push('/')
+      const raw = searchParams.get('callbackUrl')
+      const callbackUrl = raw?.startsWith('/') ? raw : '/recommendations'
+      router.push(callbackUrl)
     } catch (e) {
       setError('root', { message: e instanceof Error ? e.message : 'Login failed' })
     }
