@@ -33,7 +33,9 @@ async def register(user: UserCreate, session: SessionDep) -> Token:
             detail="Email or username already taken",
         )
 
-    access_token = create_access_token({"sub": str(created_user.id)})
+    access_token = create_access_token(
+        {"sub": str(created_user.id), "username": created_user.username}
+    )
 
     return Token(access_token=access_token, token_type="bearer")
 
@@ -60,6 +62,6 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token = create_access_token({"sub": str(user.id)})
+    access_token = create_access_token({"sub": str(user.id), "username": user.username})
 
     return Token(access_token=access_token, token_type="bearer")
