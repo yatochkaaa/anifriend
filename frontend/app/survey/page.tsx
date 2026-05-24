@@ -1,10 +1,23 @@
 import { Card } from '@/components/ui/card'
 import { getGenres } from '@/lib/api/genres'
+import { getSurvey } from '@/lib/api/survey'
+import { SurveyFormData } from '@/types/survey'
+import { Suspense } from 'react'
 import SurveyForm from './SurveyForm'
 
-export default async function SurveyPage() {
-  const genres = await getGenres()
+async function SurveyFormFeed() {
+  const [survey, genres] = await Promise.all([getSurvey(), getGenres()])
+  const surveyFormData: SurveyFormData = {
+    genresPrefer: survey?.genresPrefer ?? [],
+    genresAvoid: survey?.genresAvoid ?? [],
+    animesPrefer: survey?.animesPrefer ?? [],
+    charactersPrefer: survey?.charactersPrefer ?? [],
+  }
 
+  return <SurveyForm survey={surveyFormData} genres={genres} isCreate={!Boolean(survey?.id)} />
+}
+
+export default function SurveyPage() {
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-12">
       <div className="mb-8">
@@ -18,7 +31,9 @@ export default async function SurveyPage() {
         </p>
       </div>
       <Card className="p-6">
-        <SurveyForm genres={genres} />
+        <Suspense>
+          <SurveyFormFeed />
+        </Suspense>
       </Card>
     </main>
   )

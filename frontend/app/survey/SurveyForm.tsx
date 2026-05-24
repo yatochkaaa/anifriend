@@ -1,9 +1,10 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { createSurvey } from '@/lib/actions/survey'
+import { createSurvey, updateSurvey } from '@/lib/actions/survey'
 import { cn } from '@/lib/utils'
 import { Genre, GenreKind } from '@/types/genre'
+import { SurveyFormData } from '@/types/survey'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { ComponentProps, useMemo } from 'react'
@@ -11,7 +12,9 @@ import { useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 
 interface SurveyFormProps {
+  survey: SurveyFormData
   genres: Genre[]
+  isCreate: boolean
 }
 
 const formSchema = z.object({
@@ -44,7 +47,7 @@ const KIND_LABELS: Record<GenreKind, string> = {
 
 const KIND_ORDER: GenreKind[] = ['demographic', 'genre', 'theme']
 
-export default function SurveyForm({ genres }: SurveyFormProps) {
+export default function SurveyForm({ survey, genres, isCreate }: SurveyFormProps) {
   const router = useRouter()
 
   const {
@@ -56,10 +59,10 @@ export default function SurveyForm({ genres }: SurveyFormProps) {
   } = useForm<SurveyFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      genresPrefer: [],
-      genresAvoid: [],
-      animesPrefer: [],
-      charactersPrefer: [],
+      genresPrefer: survey.genresPrefer,
+      genresAvoid: survey.genresAvoid,
+      animesPrefer: survey.animesPrefer,
+      charactersPrefer: survey.charactersPrefer,
     },
   })
 
@@ -100,10 +103,15 @@ export default function SurveyForm({ genres }: SurveyFormProps) {
 
   const onSubmit = async (survey: SurveyFormValues) => {
     try {
-      await createSurvey(survey)
+      if (isCreate) {
+        await createSurvey(survey)
+      } else {
+        await updateSurvey(survey)
+      }
       router.push('/recommendations')
     } catch (e) {
-      setError('root', { message: e instanceof Error ? e.message : 'Create survey failed' })
+      const action = isCreate ? 'Create' : 'Update'
+      setError('root', { message: e instanceof Error ? e.message : `${action} survey failed` })
     }
   }
 
@@ -146,7 +154,7 @@ export default function SurveyForm({ genres }: SurveyFormProps) {
 
       <div>
         <Button type="submit" className="ml-auto flex" disabled={isSubmitting}>
-          Find my destiny
+          {isCreate ? 'Find my destiny' : 'Update preferences'}
         </Button>
       </div>
     </form>
