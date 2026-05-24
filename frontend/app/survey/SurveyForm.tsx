@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { createSurvey } from '@/lib/api/survey'
+import { createSurvey } from '@/lib/actions/survey'
 import { cn } from '@/lib/utils'
 import { Genre, GenreKind } from '@/types/genre'
 import { zodResolver } from '@hookform/resolvers/zod'
