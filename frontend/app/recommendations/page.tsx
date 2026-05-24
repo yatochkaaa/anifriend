@@ -1,9 +1,13 @@
 import { getRecommendations } from '@/lib/api/recommend'
-import RecommendationList from './RecommendationList'
+import { Suspense } from 'react'
+import RecommendationList, { RecommendationsSkeleton } from './RecommendationList'
 
-export default async function RecommendationsPage() {
+async function RecommendationsFeed() {
   const recommendations = await getRecommendations()
+  return <RecommendationList animes={recommendations} />
+}
 
+export default function RecommendationsPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-12">
       <div className="mb-8">
@@ -12,7 +16,9 @@ export default async function RecommendationsPage() {
           Based on your preferences, here are anime we think you&apos;ll enjoy.
         </p>
       </div>
-      <RecommendationList animes={recommendations} />
+      <Suspense fallback={<RecommendationsSkeleton />}>
+        <RecommendationsFeed />
+      </Suspense>
     </main>
   )
 }

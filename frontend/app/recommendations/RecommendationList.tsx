@@ -1,10 +1,27 @@
 import { Card, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Anime } from '@/types/anime'
 import Image from 'next/image'
 import Link from 'next/link'
 
 interface RecommendationListProps {
   animes: Anime[]
+}
+
+export function RecommendationsSkeleton() {
+  return (
+    <ul className="grid grid-cols-3 gap-4 sm:grid-cols-4 lg:grid-cols-6">
+      {Array.from({ length: 12 }).map((_, i) => (
+        <li key={i} className="overflow-hidden rounded-lg">
+          <Skeleton className="aspect-[80/113] w-full rounded-b-none" />
+          <div className="space-y-1 p-2">
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-2 w-1/2" />
+          </div>
+        </li>
+      ))}
+    </ul>
+  )
 }
 
 export default function RecommendationList({ animes }: RecommendationListProps) {
@@ -49,7 +66,9 @@ export default function RecommendationList({ animes }: RecommendationListProps) 
             </div>
             <CardContent className="p-2">
               <p className="truncate text-sm leading-tight font-medium">{anime.name}</p>
-              {anime.score != null && <p className="text-muted-foreground text-xs">★ {anime.score}</p>}
+              {anime.score != null && (
+                <p className="text-muted-foreground text-xs">★ {anime.score}</p>
+              )}
             </CardContent>
           </Card>
         </li>
