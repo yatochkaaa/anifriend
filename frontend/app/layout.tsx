@@ -1,7 +1,8 @@
+import Navbar from '@/components/Navbar'
+import { cn } from '@/lib/utils'
 import type { Metadata } from 'next'
 import { Figtree } from 'next/font/google'
 import './globals.css'
-import { cn } from '@/lib/utils'
 
 const figtree = Figtree({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -17,7 +18,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn('dark', 'h-full', 'antialiased', 'font-sans', figtree.variable)}>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <Navbar />
+        {children}
+      </body>
     </html>
   )
 }
