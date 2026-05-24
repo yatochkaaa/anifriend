@@ -17,9 +17,10 @@ def _has_avoided_genre(anime: ShikimoriAnime, genres_avoid: set[int]) -> bool:
 async def get_recommendations(
     session: AsyncSession,
     shikimori_client: ShikimoriClient,
+    user_id: int,
     score: int = DEFAULT_MIN_SCORE,
 ) -> list[ShikimoriAnime]:
-    survey = await get_survey(session)
+    survey = await get_survey(session, user_id)
 
     if survey is None:
         return []
