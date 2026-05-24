@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 
-from app.api.deps import SessionDep
+from app.api.deps import CurrentUserDep, SessionDep
 from app.dto import SurveyCreateDTO, SurveyUpdateDTO
 from app.schemas import SurveyCreate, SurveyRead, SurveyUpdate
 from app.services import add_survey, get_survey, modify_survey
@@ -9,8 +9,8 @@ router = APIRouter(prefix="/survey", tags=["survey"])
 
 
 @router.get("/")
-async def read_survey(session: SessionDep) -> SurveyRead:
-    survey = await get_survey(session)
+async def read_survey(session: SessionDep, current_user: CurrentUserDep) -> SurveyRead:
+    survey = await get_survey(session, current_user.id)
 
     if survey is None:
         raise HTTPException(
@@ -21,10 +21,11 @@ async def read_survey(session: SessionDep) -> SurveyRead:
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_survey(survey: SurveyCreate, session: SessionDep) -> SurveyRead:
+async def create_survey(
+    survey: SurveyCreate, session: SessionDep, current_user: CurrentUserDep
+) -> SurveyRead:
     dto = SurveyCreateDTO(
-        #  TODO: replace with current user from JWT
-        user_id=1,
+        user_id=current_user.id,
         genres_prefer=survey.genres_prefer,
         genres_avoid=survey.genres_avoid,
         animes_prefer=survey.animes_prefer,
@@ -36,10 +37,11 @@ async def create_survey(survey: SurveyCreate, session: SessionDep) -> SurveyRead
 
 
 @router.put("/")
-async def update_survey(survey: SurveyUpdate, session: SessionDep) -> SurveyRead:
+async def update_survey(
+    survey: SurveyUpdate, session: SessionDep, current_user: CurrentUserDep
+) -> SurveyRead:
     dto = SurveyUpdateDTO(
-        #  TODO: replace with current user from JWT
-        user_id=1,
+        user_id=current_user.id,
         genres_prefer=survey.genres_prefer,
         genres_avoid=survey.genres_avoid,
         animes_prefer=survey.animes_prefer,

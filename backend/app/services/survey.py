@@ -65,11 +65,10 @@ def gather_survey_read_dto_from_orm(db_survey: Survey) -> SurveyReadDTO:
     }
 
 
-async def get_survey(session: AsyncSession) -> SurveyReadDTO | None:
+async def get_survey(session: AsyncSession, user_id: int) -> SurveyReadDTO | None:
     survey_result = await session.execute(
         select(Survey)
-        #  TODO: replace with current user from JWT
-        .where(Survey.user_id == 1)
+        .where(Survey.user_id == user_id)
         .options(
             selectinload(Survey.genres),
             selectinload(Survey.animes),
