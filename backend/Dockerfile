@@ -49,4 +49,4 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 WORKDIR /app/backend/
 
-CMD fastapi run app/main.py --port $PORT
+CMD bash scripts/prestart.sh && fastapi run app/main.py --port $PORT
