@@ -36,6 +36,7 @@ RUN --mount=type=cache,id=s/533d3a56-ef55-44c6-abf6-355b3c466748-/root/.cache/uv
 COPY ./scripts /app/backend/scripts
 
 COPY ./pyproject.toml ./alembic.ini /app/backend/
+COPY ./alembic /app/backend/alembic
 
 COPY ./app /app/backend/app
 
