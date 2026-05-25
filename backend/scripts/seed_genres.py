@@ -2,7 +2,7 @@ import asyncio
 from typing import TypedDict
 
 import httpx
-from sqlalchemy import insert
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from app.core.db import async_session_maker
 from app.integrations.shikimori import ShikimoriClient
@@ -31,7 +31,11 @@ async def seed_genres() -> None:
             }
             for genre in shikimori_genres
         ]
-        await session.execute(insert(Genre).values(db_genres))
+        await session.execute(
+            pg_insert(Genre)
+            .values(db_genres)
+            .on_conflict_do_nothing(index_elements=["shikimori_id"])
+        )
         await session.commit()
 
 
