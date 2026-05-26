@@ -1,8 +1,9 @@
 # AniFriend — AI Anime Recommender
 
-**AniFriend** is a personalized anime recommendation service for CIS audiences. Instead of manually browsing filters, users fill out a short preference survey — and get tailored recommendations with reasoning.
+**AniFriend** is a personalized anime recommendation service. Instead of manually browsing filters, users fill out a short preference survey — and get tailored recommendations with reasoning.
 
-**Live demo:** [anifriend-inky.vercel.app](https://anifriend-inky.vercel.app)
+**Live demo:** [anifriend-inky.vercel.app](https://anifriend-inky.vercel.app)  
+**API docs:** [anifriend.onrender.com/docs](https://anifriend.onrender.com/docs)
 
 > [!WARNING]
 > The backend is hosted on Render's free tier and **may take up to 1 minute to cold start** after a period of inactivity. If the app seems unresponsive — wait a moment and try again.
@@ -12,7 +13,7 @@
 ## Features
 
 - Preference survey — genres to prefer and avoid, favorite anime and characters
-- AI-driven recommendations via [Shikimori API](https://shikimori.one) (Russian titles, CIS-focused catalog)
+- Personalized recommendations via [Shikimori API](https://shikimori.one)
 - Auth with JWT (register / login / logout)
 - Update survey at any time — recommendations update accordingly
 - Protected routes with middleware-based redirect
@@ -42,14 +43,15 @@ The backend exposes `/api/v1/` endpoints for auth, survey, and recommendations. 
 
 ## Local Development
 
-**Requirements:** Docker, Bun, Python 3.14, uv
+**Requirements:** PostgreSQL, Bun, Python 3.14, uv
 
 **Backend:**
 ```bash
 cd backend
 uv sync
 cp ../.env.example ../.env  # fill in values
-uvicorn app.main:app --reload
+alembic upgrade head
+fastapi dev
 ```
 
 **Frontend:**
@@ -61,8 +63,8 @@ bun dev
 
 ## Roadmap
 
-- [ ] ML-based recommendations (Scikit-learn → Hugging Face)
+- [ ] Bug fixes and test coverage (unit + e2e)
 - [ ] JWT refresh tokens + social auth
 - [ ] "Anime by mood" feature ("for a sad day", "for a lazy evening")
 - [ ] Social layer: share recommendations, create anime watch-together sessions with real-time chat
-- [ ] Fanfic generator with collaborative editing
+- [ ] ML-based recommendations (Scikit-learn → Hugging Face)
