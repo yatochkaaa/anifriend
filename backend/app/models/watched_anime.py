@@ -24,7 +24,9 @@ class WatchedAnime(Base):
 
     __tablename__ = "watched_animes"
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    )
     shikimori_anime_id: Mapped[int] = mapped_column(primary_key=True)
     rating: Mapped[float | None] = mapped_column(default=None)
     status: Mapped[WatchedAnimeStatus | None] = mapped_column(

@@ -15,7 +15,7 @@ class Survey(Base):
     __tablename__ = "surveys"
 
     id: Mapped[int_pk]
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), unique=True)
 
     animes: Mapped[list["SurveyAnime"]] = relationship(
         back_populates="survey", cascade="all, delete-orphan"

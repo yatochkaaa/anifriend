@@ -21,5 +21,9 @@ class User(Base):
     date_of_birth: Mapped[date | None]
     is_active: Mapped[bool] = mapped_column(default=True)
 
-    survey: Mapped["Survey | None"] = relationship(back_populates="user")
-    watched_animes: Mapped[list["WatchedAnime"]] = relationship(back_populates="user")
+    survey: Mapped["Survey | None"] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    watched_animes: Mapped[list["WatchedAnime"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )

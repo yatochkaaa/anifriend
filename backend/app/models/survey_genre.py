@@ -14,7 +14,9 @@ class SurveyGenre(Base):
 
     __tablename__ = "survey_genres"
 
-    survey_id: Mapped[int] = mapped_column(ForeignKey("surveys.id"), primary_key=True)
+    survey_id: Mapped[int] = mapped_column(
+        ForeignKey("surveys.id", ondelete="CASCADE"), primary_key=True
+    )
     genre_id: Mapped[int] = mapped_column(ForeignKey("genres.id"), primary_key=True)
     is_liked: Mapped[bool]
 
