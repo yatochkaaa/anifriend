@@ -15,7 +15,10 @@ export const createUser = async (formData: UserCreateFormData): Promise<Token> =
     body: JSON.stringify(payload),
   })
 
-  if (!res.ok) throw new Error('Failed to register user')
+  if (!res.ok) {
+    const { detail } = await res.json()
+    throw new Error(detail ?? 'Failed to register user')
+  }
 
   const { access_token, token_type }: TokenResponse = await res.json()
   return { accessToken: access_token, tokenType: token_type }
@@ -32,7 +35,10 @@ export const login = async (formData: UserLogin): Promise<Token> => {
     body: params,
   })
 
-  if (!res.ok) throw new Error('Failed to login user')
+    if (!res.ok) {
+    const { detail } = await res.json()
+    throw new Error(detail ?? 'Failed to login user')
+  }
 
   const { access_token, token_type }: TokenResponse = await res.json()
   return { accessToken: access_token, tokenType: token_type }
