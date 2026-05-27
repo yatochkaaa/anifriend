@@ -18,7 +18,7 @@ interface SurveyFormProps {
 }
 
 const formSchema = z.object({
-  genresPrefer: z.array(z.int()),
+  genresPrefer: z.array(z.int()).max(5, 'You can pick up to 5 preferred genres'),
   genresAvoid: z.array(z.int()),
   animesPrefer: z.array(z.int()),
   charactersPrefer: z.array(z.int()),
@@ -71,6 +71,7 @@ export default function SurveyForm({ survey, genres, isCreate }: SurveyFormProps
 
   const preferSet = useMemo(() => new Set(preferGenres), [preferGenres])
   const avoidSet = useMemo(() => new Set(avoidGenres), [avoidGenres])
+  const preferGenresLimit = 5
 
   const genresByKind = KIND_ORDER.map((kind) => ({
     kind,
@@ -116,7 +117,17 @@ export default function SurveyForm({ survey, genres, isCreate }: SurveyFormProps
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-10">
+    <form onSubmit={handleSubmit(onSubmit)} className="relative flex flex-col gap-10">
+      <div className="absolute top-0 right-0 flex gap-3 text-sm font-semibold tabular-nums">
+        <span
+          className={cn(
+            preferGenres.length > preferGenresLimit ? 'text-destructive' : 'text-muted-foreground'
+          )}
+        >
+          ❤️ {preferGenres.length}/{preferGenresLimit}
+        </span>
+        <span className="text-muted-foreground">💀 {avoidGenres.length}</span>
+      </div>
       {genresByKind.map(({ kind, genres: kindGenres }) => (
         <div key={kind} className="flex flex-col gap-3">
           <h2 className="text-foreground/70 text-base font-semibold tracking-wide uppercase">
@@ -150,7 +161,12 @@ export default function SurveyForm({ survey, genres, isCreate }: SurveyFormProps
         </div>
       ))}
 
-      {errors.root && <p className="text-destructive text-sm">{errors.root.message}</p>}
+      <div>
+        {errors.genresPrefer && (
+          <p className="text-destructive text-sm">{errors.genresPrefer.message}</p>
+        )}
+        {errors.root && <p className="text-destructive text-sm">{errors.root.message}</p>}
+      </div>
 
       <div>
         <Button type="submit" className="ml-auto flex" disabled={isSubmitting}>
