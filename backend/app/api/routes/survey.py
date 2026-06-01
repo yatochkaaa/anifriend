@@ -33,6 +33,8 @@ async def create_survey(
     )
     created_survey = await add_survey(session, dto)
 
+    await session.commit()
+
     return SurveyRead.model_validate(created_survey)
 
 
@@ -53,5 +55,7 @@ async def update_survey(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Survey not found"
         )
+
+    await session.commit()
 
     return SurveyRead.model_validate(updated_survey)

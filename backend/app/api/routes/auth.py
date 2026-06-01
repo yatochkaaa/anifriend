@@ -33,6 +33,7 @@ async def register(user: UserCreate, session: SessionDep) -> Token:
             detail="Email or username already taken",
         )
 
+    await session.commit()
     access_token = create_access_token(
         {"sub": str(created_user.id), "username": created_user.username}
     )

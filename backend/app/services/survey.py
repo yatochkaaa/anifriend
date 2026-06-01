@@ -33,16 +33,16 @@ def gather_survey_characters(character_ids: list[int]) -> list[SurveyCharacter]:
 def gather_survey_read_dto(
     db_survey: Survey, dto: SurveyCreateDTO | SurveyUpdateDTO
 ) -> SurveyReadDTO:
-    return {
-        "id": db_survey.id,
-        "user_id": db_survey.user_id,
-        "created_at": db_survey.created_at,
-        "updated_at": db_survey.updated_at,
-        "genres_prefer": dto["genres_prefer"],
-        "genres_avoid": dto["genres_avoid"],
-        "animes_prefer": dto["animes_prefer"],
-        "characters_prefer": dto["characters_prefer"],
-    }
+    return SurveyReadDTO(
+        id=db_survey.id,
+        user_id=db_survey.user_id,
+        created_at=db_survey.created_at,
+        updated_at=db_survey.updated_at,
+        genres_prefer=dto["genres_prefer"],
+        genres_avoid=dto["genres_avoid"],
+        animes_prefer=dto["animes_prefer"],
+        characters_prefer=dto["characters_prefer"],
+    )
 
 
 def gather_survey_read_dto_from_orm(db_survey: Survey) -> SurveyReadDTO:
@@ -53,16 +53,16 @@ def gather_survey_read_dto_from_orm(db_survey: Survey) -> SurveyReadDTO:
         character.shikimori_character_id for character in db_survey.characters
     ]
 
-    return {
-        "id": db_survey.id,
-        "user_id": db_survey.user_id,
-        "created_at": db_survey.created_at,
-        "updated_at": db_survey.updated_at,
-        "genres_prefer": genres_prefer,
-        "genres_avoid": genres_avoid,
-        "animes_prefer": animes_prefer,
-        "characters_prefer": characters_prefer,
-    }
+    return SurveyReadDTO(
+        id=db_survey.id,
+        user_id=db_survey.user_id,
+        created_at=db_survey.created_at,
+        updated_at=db_survey.updated_at,
+        genres_prefer=genres_prefer,
+        genres_avoid=genres_avoid,
+        animes_prefer=animes_prefer,
+        characters_prefer=characters_prefer,
+    )
 
 
 async def get_survey(session: AsyncSession, user_id: int) -> SurveyReadDTO | None:
@@ -87,13 +87,12 @@ async def add_survey(session: AsyncSession, dto: SurveyCreateDTO) -> SurveyReadD
     genres = gather_survey_genres(dto["genres_prefer"], dto["genres_avoid"])
     animes = gather_survey_animes(dto["animes_prefer"])
     characters = gather_survey_characters(dto["characters_prefer"])
-
     db_survey = Survey(
         user_id=dto["user_id"], genres=genres, animes=animes, characters=characters
     )
 
     session.add(db_survey)
-    await session.commit()
+    await session.flush()
     await session.refresh(db_survey)
 
     return gather_survey_read_dto(db_survey, dto)
@@ -124,6 +123,7 @@ async def modify_survey(
     db_survey.animes = animes
     db_survey.characters = characters
 
-    await session.commit()
+    await session.flush()
     await session.refresh(db_survey)
+
     return gather_survey_read_dto(db_survey, dto)

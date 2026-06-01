@@ -1,12 +1,10 @@
 from fastapi import APIRouter, HTTPException, status
 
 from app.api.deps import SessionDep
-from app.core.security import get_password_hash
-from app.dto import UserCreateDTO, UserUpdateDTO
+from app.dto import UserUpdateDTO
 from app.exceptions import UserAlreadyExistsError
-from app.schemas import UserCreate, UserRead, UserUpdate
+from app.schemas import UserRead, UserUpdate
 from app.services import (
-    add_user,
     get_user_by_id,
     get_users,
     modify_user,
@@ -34,36 +32,26 @@ async def read_user(user_id: int, session: SessionDep) -> UserRead:
     return UserRead.model_validate(user)
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_user(user: UserCreate, session: SessionDep) -> UserRead:
-    hashed_password = get_password_hash(user.password)
-    dto = UserCreateDTO(
-        email=str(user.email).lower(),
-        username=user.username,
-        hashed_password=hashed_password,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        date_of_birth=user.date_of_birth,
-    )
-
-    try:
-        created_user = await add_user(session, dto)
-    except UserAlreadyExistsError:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email or username already taken")
-
-    return UserRead.model_validate(created_user)
-
-
 @router.patch("/{user_id}")
 async def update_user(user_id: int, user: UserUpdate, session: SessionDep) -> UserRead:
     update_data = user.model_dump(exclude_unset=True)
     dto = UserUpdateDTO(**update_data)
-    updated_user = await modify_user(session, user_id, dto)
+
+    try:
+        updated_user = await modify_user(session, user_id, dto)
+    except UserAlreadyExistsError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email or username already taken",
+        )
 
     if updated_user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
+
+    await session.commit()
+    await session.refresh(updated_user)
 
     return UserRead.model_validate(updated_user)
 
@@ -76,3 +64,5 @@ async def delete_user(user_id: int, session: SessionDep) -> None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
+
+    await session.commit()
