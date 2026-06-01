@@ -16,6 +16,7 @@ TEST_DB_URL = f"postgresql+psycopg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGR
 
 async def create_test_db() -> None:
     conn = await psycopg.AsyncConnection.connect(DEFAULT_DB_URL, autocommit=True)
+    await conn.execute("DROP DATABASE IF EXISTS anifriend_test WITH (FORCE)")
     await conn.execute("CREATE DATABASE anifriend_test")
     await conn.close()
 

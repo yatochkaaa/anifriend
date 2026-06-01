@@ -1,9 +1,8 @@
-from collections.abc import AsyncGenerator
+from typing import AsyncGenerator
 
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.ext.asyncio.engine import AsyncEngine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.api.deps import get_db
 from app.main import app
@@ -14,32 +13,31 @@ from tests.utils.db import (
     make_test_migrations,
 )
 
-@pytest_asyncio.fixture(scope="session")
-async def engine() -> AsyncGenerator[AsyncEngine, None]:
-    await create_test_db()
-    make_test_migrations(TEST_DB_URL)
-    engine = create_async_engine(TEST_DB_URL)
 
-    yield engine
+@pytest_asyncio.fixture(name="session")
+async def session_fixture() -> AsyncGenerator[AsyncSession, None]:
+    await create_test_db()
+    async_engine = create_async_engine(TEST_DB_URL)
+    async_session_maker = async_sessionmaker(async_engine, expire_on_commit=False)
+    make_test_migrations(TEST_DB_URL)
+
+    async with async_session_maker() as session:
+        yield session
+
+    await async_engine.dispose()
     await drop_test_db()
 
 
-@pytest_asyncio.fixture(scope="function")
-async def db(engine) -> AsyncGenerator[AsyncSession, None]:
-    async with AsyncSession(engine) as session:
-        await session.begin()
+@pytest_asyncio.fixture(name="client")
+async def client_fixture(session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
+    async def get_session_override() -> AsyncGenerator[AsyncSession, None]:
         yield session
-        await session.rollback()
 
+    app.dependency_overrides[get_db] = get_session_override
 
-@pytest_asyncio.fixture(scope="function")
-async def client(db: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
-    async def override_session() -> AsyncGenerator[AsyncSession, None]:
-        yield db
-
-    app.dependency_overrides[get_db] = override_session
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"
     ) as ac:
         yield ac
+
     app.dependency_overrides.clear()
