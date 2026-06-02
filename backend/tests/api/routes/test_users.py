@@ -3,53 +3,25 @@ from httpx import AsyncClient
 
 from app.core.config import settings
 from app.core.security import verify_token
-from tests.utils.utils import random_email, random_lower_string
+from tests.utils.user import register_user
+from tests.utils.utils import random_lower_string
 
 
 async def test_read_user(client: AsyncClient) -> None:
-    email = random_email()
-    username = random_lower_string()
-    data = {
-        "email": email,
-        "username": username,
-        "date_of_birth": "1998-08-05",
-        "password": "TestPass123",
-        "password_repeat": "TestPass123",
-    }
-
-    response = await client.post(f"{settings.API_V1_STR}/auth/register", json=data)
-    access_token = response.json()["access_token"]
+    user_in, access_token = await register_user(client)
     token_data = verify_token(access_token)
     response = await client.get(f"{settings.API_V1_STR}/users/{token_data.user_id}")
     assert response.status_code == status.HTTP_200_OK
-    user = response.json()
-
-    assert user["email"] == data["email"]
-    assert user["username"] == data["username"]
-    assert user["date_of_birth"] == data["date_of_birth"]
-    assert user["is_active"]
+    user_out = response.json()
+    assert user_out["email"] == user_in["email"]
+    assert user_out["username"] == user_in["username"]
+    assert user_out["date_of_birth"] == user_in["date_of_birth"]
+    assert user_out["is_active"]
 
 
 async def test_read_users(client: AsyncClient) -> None:
-    email, email2 = random_email(), random_email()
-    username, username2 = random_lower_string(), random_lower_string()
-    data = {
-        "email": email,
-        "username": username,
-        "date_of_birth": "1998-08-05",
-        "password": "TestPass123",
-        "password_repeat": "TestPass123",
-    }
-    data2 = {
-        "email": email2,
-        "username": username2,
-        "date_of_birth": "1998-08-05",
-        "password": "TestPass123",
-        "password_repeat": "TestPass123",
-    }
-    await client.post(f"{settings.API_V1_STR}/auth/register", json=data)
-    await client.post(f"{settings.API_V1_STR}/auth/register", json=data2)
-
+    await register_user(client)
+    await register_user(client)
     response = await client.get(f"{settings.API_V1_STR}/users/")
     assert response.status_code == status.HTTP_200_OK
     all_users = response.json()
@@ -62,19 +34,9 @@ async def test_read_users(client: AsyncClient) -> None:
 
 
 async def test_update_user(client: AsyncClient) -> None:
-    email = random_email()
-    username = random_lower_string()
-    new_username = random_lower_string()
-    data = {
-        "email": email,
-        "username": username,
-        "date_of_birth": "1998-08-05",
-        "password": "TestPass123",
-        "password_repeat": "TestPass123",
-    }
-    response = await client.post(f"{settings.API_V1_STR}/auth/register", json=data)
-    access_token = response.json()["access_token"]
+    _, access_token = await register_user(client)
     token_data = verify_token(access_token)
+    new_username = random_lower_string()
     data = {"username": new_username}
     response = await client.patch(
         f"{settings.API_V1_STR}/users/{token_data.user_id}", json=data
@@ -85,17 +47,7 @@ async def test_update_user(client: AsyncClient) -> None:
 
 
 async def test_delete_user(client: AsyncClient) -> None:
-    email = random_email()
-    username = random_lower_string()
-    data = {
-        "email": email,
-        "username": username,
-        "date_of_birth": "1998-08-05",
-        "password": "TestPass123",
-        "password_repeat": "TestPass123",
-    }
-    response = await client.post(f"{settings.API_V1_STR}/auth/register", json=data)
-    access_token = response.json()["access_token"]
+    _, access_token = await register_user(client)
     token_data = verify_token(access_token)
     response = await client.delete(f"{settings.API_V1_STR}/users/{token_data.user_id}")
     assert response.status_code == status.HTTP_204_NO_CONTENT
