@@ -1,8 +1,10 @@
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.dto import SurveyCreateDTO, SurveyReadDTO, SurveyUpdateDTO
+from app.exceptions import SurveyAlreadyExistsError
 from app.models import Survey, SurveyAnime, SurveyCharacter, SurveyGenre
 
 
@@ -92,7 +94,12 @@ async def add_survey(session: AsyncSession, dto: SurveyCreateDTO) -> SurveyReadD
     )
 
     session.add(db_survey)
-    await session.flush()
+
+    try:
+        await session.flush()
+    except IntegrityError:
+        raise SurveyAlreadyExistsError
+
     await session.refresh(db_survey)
 
     return gather_survey_read_dto(db_survey, dto)

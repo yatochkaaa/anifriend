@@ -6,12 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from app.api.deps import get_db
 from app.main import app
+from app.models.genre import Genre
 from tests.utils.db import (
     TEST_DB_URL,
     create_test_db,
     drop_test_db,
     make_test_migrations,
 )
+from tests.utils.genre import create_test_genres
 
 
 @pytest_asyncio.fixture(name="session")
@@ -41,3 +43,8 @@ async def client_fixture(session: AsyncSession) -> AsyncGenerator[AsyncClient, N
         yield ac
 
     app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture(name="genres")
+async def genres_fixture(session: AsyncSession) -> list[Genre]:
+    return await create_test_genres(session)
