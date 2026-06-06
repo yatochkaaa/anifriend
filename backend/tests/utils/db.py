@@ -27,7 +27,7 @@ async def drop_test_db() -> None:
     await conn.close()
 
 
-def make_test_migrations(db_url: str) -> None:
+def run_test_migrations(db_url: str) -> None:
     alembic_cfg = Config("alembic.ini")
     alembic_cfg.set_main_option("sqlalchemy.url", db_url)
     command.upgrade(alembic_cfg, "head")
