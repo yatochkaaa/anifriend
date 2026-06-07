@@ -13,7 +13,7 @@ export function RecommendationsSkeleton() {
     <ul className="grid grid-cols-3 gap-4 sm:grid-cols-4 lg:grid-cols-6">
       {Array.from({ length: 12 }).map((_, i) => (
         <li key={i} className="overflow-hidden rounded-lg">
-          <Skeleton className="aspect-[80/113] w-full rounded-b-none" />
+          <Skeleton className="aspect-80/113 w-full rounded-b-none" />
           <div className="space-y-1 p-2">
             <Skeleton className="h-3 w-full" />
             <Skeleton className="h-2 w-1/2" />

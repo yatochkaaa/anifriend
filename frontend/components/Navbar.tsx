@@ -1,4 +1,4 @@
-import { getUsernameFromToken } from '@/lib/utils'
+import { parseToken } from '@/lib/utils'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { Suspense } from 'react'
@@ -7,7 +7,7 @@ import NavbarUserMenu from './NavbarUserMenu'
 async function NavbarUser() {
   const token = (await cookies()).get('access_token')?.value
   if (!token) return null
-  const username = getUsernameFromToken(token)
+  const username = parseToken(token)?.username
   if (!username) return null
 
   return (

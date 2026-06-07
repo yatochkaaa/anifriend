@@ -8,6 +8,12 @@ export interface TokenResponse {
   token_type: string
 }
 
+export interface TokenData {
+  sub: string,
+  username: string,
+  exp: number,
+}
+
 export interface UserCreate {
   email: string
   username: string
