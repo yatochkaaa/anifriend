@@ -33,23 +33,24 @@ async def test_read_users(client: AsyncClient) -> None:
         assert "is_active" in user
 
 
-async def test_update_user(client: AsyncClient) -> None:
+async def test_update_user_me(client: AsyncClient) -> None:
     _, access_token = await register_user(client)
-    token_data = verify_token(access_token)
     new_username = random_lower_string()
     data = {"username": new_username}
+    headers = {"Authorization": f"Bearer {access_token}"}
     response = await client.patch(
-        f"{settings.API_V1_STR}/users/{token_data.user_id}", json=data
+        f"{settings.API_V1_STR}/users/me", json=data, headers=headers
     )
     assert response.status_code == status.HTTP_200_OK
     updated_user = response.json()
     assert updated_user["username"] == new_username
 
 
-async def test_delete_user(client: AsyncClient) -> None:
+async def test_delete_user_me(client: AsyncClient) -> None:
     _, access_token = await register_user(client)
     token_data = verify_token(access_token)
-    response = await client.delete(f"{settings.API_V1_STR}/users/{token_data.user_id}")
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = await client.delete(f"{settings.API_V1_STR}/users/me", headers=headers)
     assert response.status_code == status.HTTP_204_NO_CONTENT
     response = await client.get(f"{settings.API_V1_STR}/users/{token_data.user_id}")
     assert response.status_code == status.HTTP_404_NOT_FOUND
