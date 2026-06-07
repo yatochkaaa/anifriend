@@ -41,15 +41,15 @@ async def add_user(
     session: AsyncSession,
     dto: UserCreateDTO,
 ) -> User:
+    db_user = User(**dto)
+    session.add(db_user)
+
     try:
-        db_user = User(**dto)
-        session.add(db_user)
-        await session.commit()
-        await session.refresh(db_user)
-        return db_user
+        await session.flush()
     except IntegrityError:
-        await session.rollback()
         raise UserAlreadyExistsError
+
+    return db_user
 
 
 async def modify_user(
@@ -62,8 +62,12 @@ async def modify_user(
 
     for key, value in dto.items():
         setattr(db_user, key, value)
-    await session.commit()
-    await session.refresh(db_user)
+
+    try:
+        await session.flush()
+    except IntegrityError:
+        raise UserAlreadyExistsError
+
     return db_user
 
 
@@ -74,6 +78,5 @@ async def remove_user(session: AsyncSession, user_id: int) -> Literal[True] | No
         return None
 
     await session.delete(db_user)
-    await session.commit()
 
     return True

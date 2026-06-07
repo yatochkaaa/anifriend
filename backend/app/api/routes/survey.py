@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 
 from app.api.deps import CurrentUserDep, SessionDep
 from app.dto import SurveyCreateDTO, SurveyUpdateDTO
+from app.exceptions import SurveyAlreadyExistsError
 from app.schemas import SurveyCreate, SurveyRead, SurveyUpdate
 from app.services import add_survey, get_survey, modify_survey
 
@@ -31,7 +32,14 @@ async def create_survey(
         animes_prefer=survey.animes_prefer,
         characters_prefer=survey.characters_prefer,
     )
-    created_survey = await add_survey(session, dto)
+    try:
+        created_survey = await add_survey(session, dto)
+    except SurveyAlreadyExistsError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Survey already exists"
+        )
+
+    await session.commit()
 
     return SurveyRead.model_validate(created_survey)
 
@@ -53,5 +61,7 @@ async def update_survey(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Survey not found"
         )
+
+    await session.commit()
 
     return SurveyRead.model_validate(updated_survey)
