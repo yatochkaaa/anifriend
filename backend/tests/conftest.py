@@ -18,6 +18,7 @@ from tests.utils.db import (
     run_test_migrations,
 )
 from tests.utils.genre import create_test_genres
+from tests.utils.user import register_user
 
 
 @pytest_asyncio.fixture(name="engine", scope="session")
@@ -65,3 +66,9 @@ async def client_fixture(session: AsyncSession) -> AsyncGenerator[AsyncClient, N
 @pytest_asyncio.fixture(name="genres")
 async def genres_fixture(session: AsyncSession) -> list[Genre]:
     return await create_test_genres(session)
+
+
+@pytest_asyncio.fixture(name="auth_headers")
+async def auth_headers_fixture(client: AsyncClient) -> dict[str, str]:
+    _, access_token = await register_user(client)
+    return {"Authorization": f"Bearer {access_token}"}
