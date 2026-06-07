@@ -59,5 +59,8 @@ class ShikimoriClient:
             },
         }
         response = await self._client.post(self.URL, json=payload)
-        animes = response.json()["data"]["animes"]
+        try:
+            animes = response.json().get("data", {}).get("animes") or []
+        except Exception:
+            return []
         return [ShikimoriAnime.model_validate(anime) for anime in animes]
