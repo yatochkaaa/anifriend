@@ -32,7 +32,9 @@ async def test_create_survey(client: AsyncClient, genres: list[Genre]) -> None:
     assert survey["characters_prefer"] == []
 
 
-async def test_create_survey_duplicate(client: AsyncClient, genres: list[Genre]) -> None:
+async def test_create_survey_duplicate(
+    client: AsyncClient, genres: list[Genre]
+) -> None:
     _, access_token = await register_user(client)
     genre_prefer_ids = [genre.id for genre in genres]
     data = {
@@ -110,3 +112,18 @@ async def test_update_survey(client: AsyncClient, genres: list[Genre]) -> None:
         assert genre_avoid in survey["genres_avoid"]
     assert survey["animes_prefer"] == []
     assert survey["characters_prefer"] == []
+
+
+async def test_update_survey_not_found(client: AsyncClient) -> None:
+    _, access_token = await register_user(client)
+    data = {
+        "genres_prefer": [],
+        "genres_avoid": [],
+        "animes_prefer": [],
+        "characters_prefer": [],
+    }
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = await client.put(
+        f"{settings.API_V1_STR}/survey/", json=data, headers=headers
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
