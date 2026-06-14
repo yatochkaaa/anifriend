@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/bin/pytest *)",
+      "Bash(.venv/bin/python -m pytest *)",
+      "Bash(.venv/bin/alembic *)",
+      "Bash(.venv/bin/ruff *)",
+      "Bash(.venv/bin/uvicorn *)",
+      "Bash(bun *)",
+      "Bash(docker compose *)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "next-devtools",
+    "shadcn"
+  ],
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash scripts/hook-ruff.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "bash scripts/hook-prettier.sh",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}
