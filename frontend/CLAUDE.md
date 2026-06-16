@@ -8,9 +8,10 @@
 
 ## Documentation References
 
-Before implementing any Next.js or shadcn feature, read the relevant doc:
-- Next.js: `node_modules/next/dist/docs/` (version-matched)
-- shadcn/ui: https://ui.shadcn.com/llms.txt
+Before implementing any Next.js or shadcn feature, consult docs MCP-first (see root `CLAUDE.md` → Documentation Sources):
+- **Next.js** → `next-devtools` MCP (`nextjs_docs` + `nextjs-docs://llms-index`). Local `node_modules/next/dist/docs/` is the offline fallback and the source of truth on any version conflict (matches installed `next@16.2.6`).
+- **shadcn/ui** → `shadcn` skill / MCP; `https://ui.shadcn.com/llms.txt` as fallback.
+- **Other libraries** → Context7.
 
 ## Project Structure
 
@@ -62,9 +63,9 @@ frontend/
 - **Bun** — package manager and runtime (faster than npm/yarn)
 - **shadcn/ui** — copy-paste component library, components live in `components/ui/`
 - **Tailwind CSS** — utility-first styling
-- **Server Actions** в `lib/actions/` — мутации через Next.js Server Actions, не REST с клиента
-- **API клиент** в `lib/api/` — fetch-функции к бэкенду, используются в Server Actions и Server Components
-- **`proxy.ts`** — dev-прокси, перенаправляет запросы к FastAPI бэкенду в режиме разработки
+- **Server Actions** in `lib/actions/` — mutations go through Next.js Server Actions, not REST from the client
+- **API client** in `lib/api/` — fetch functions to the backend, used in Server Actions and Server Components
+- **`proxy.ts`** — dev proxy, forwards requests to the FastAPI backend in development
 
 ## Commands
 
