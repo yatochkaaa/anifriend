@@ -67,9 +67,11 @@ Microservices in a monorepo:
 |---|---|---|
 | 1 | Planning: Shikimori API research, project structure, repo setup | **Done** |
 | 2 | Backend MVP: /survey and /recommend endpoints, Shikimori integration | **Done** |
-| 3 | Frontend MVP: Next.js survey form + recommendations page | **Current** |
+| 3 | Frontend MVP: Next.js survey form + recommendations page, light/dark theming | **Current** |
 | 4 | Testing + launch: deploy, community feedback | Planned |
-| 5 | Extensions: JWT auth, ML model, WebSocket chat, mobile | Future |
+| 5 | Extensions: JWT auth, ML model, WebSocket chat, conversational AI, mobile | Future |
+
+**AI companion (chibi guide)** — the embodied form of the brand's "friend": an interactive chibi mascot that reacts to hovers, pulls faces, and drops periodic text popups, acting as the on-site guide. Planned **after the conversational-AI layer lands** (Stage 5) since it shares that AI plumbing. Until then its personality is carried by color, copy, and micro-interactions — see `frontend/CLAUDE.md` → Design Direction (Signature, "arrives in layers").
 
 ## Future Modules (Roadmap)
 
