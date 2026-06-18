@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { saveToken } from '@/lib/actions/auth'
 import { login } from '@/lib/api/auth'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ArrowRight } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -75,8 +76,13 @@ export default function LoginForm() {
 
       {errors.root && <p className="text-destructive text-sm">{errors.root.message}</p>}
 
-      <Button type="submit" className="ml-auto flex" disabled={isSubmitting}>
-        Sign in
+      <Button
+        type="submit"
+        size="lg"
+        className="ml-auto flex gap-2 px-6 font-bold"
+        disabled={isSubmitting}
+      >
+        Sign in <ArrowRight className="size-4" />
       </Button>
     </form>
   )

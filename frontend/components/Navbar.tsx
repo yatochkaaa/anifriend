@@ -2,6 +2,8 @@ import { parseToken } from '@/lib/utils'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { Suspense } from 'react'
+import { ModeToggle } from './ModeToggle'
+import NavLinks from './NavLinks'
 import NavbarUserMenu from './NavbarUserMenu'
 
 async function NavbarUser() {
@@ -11,13 +13,8 @@ async function NavbarUser() {
   if (!username) return null
 
   return (
-    <div className="flex items-center gap-4">
-      <Link href="/recommendations" className="text-muted-foreground hover:text-foreground text-sm">
-        Recommendations
-      </Link>
-      <Link href="/survey" className="text-muted-foreground hover:text-foreground text-sm">
-        Survey
-      </Link>
+    <div className="flex items-center gap-2 sm:gap-3">
+      <NavLinks />
       <NavbarUserMenu username={username} />
     </div>
   )
@@ -25,15 +22,24 @@ async function NavbarUser() {
 
 export default function Navbar() {
   return (
-    <header className="border-border border-b">
+    <header className="bg-background/80 border-foreground/10 sticky top-0 z-50 border-b backdrop-blur">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/recommendations" className="font-bold">
-          🎌 AniFriend
+        <Link
+          href="/recommendations"
+          className="flex items-center gap-1.5 text-xl font-extrabold tracking-tight transition-transform duration-300 hover:-rotate-2"
+        >
+          <span>🎌</span>
+          <span>
+            Ani<span className="text-primary">Friend</span>
+          </span>
         </Link>
 
-        <Suspense>
-          <NavbarUser />
-        </Suspense>
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Suspense>
+            <NavbarUser />
+          </Suspense>
+          <ModeToggle />
+        </div>
       </nav>
     </header>
   )

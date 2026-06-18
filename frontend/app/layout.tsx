@@ -1,10 +1,19 @@
 import Navbar from '@/components/Navbar'
+import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { cn } from '@/lib/utils'
 import type { Metadata } from 'next'
-import { Figtree } from 'next/font/google'
+import { Fira_Code, Nunito } from 'next/font/google'
 import './globals.css'
 
-const figtree = Figtree({ subsets: ['latin'], variable: '--font-sans' })
+const fontSans = Nunito({
+  subsets: ['latin', 'cyrillic'],
+  variable: '--font-sans',
+})
+
+const fontMono = Fira_Code({
+  subsets: ['latin', 'cyrillic'],
+  variable: '--font-mono',
+})
 
 export const metadata: Metadata = {
   title: 'AniFriend',
@@ -17,10 +26,21 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={cn('dark', 'h-full', 'antialiased', 'font-sans', figtree.variable)}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn('h-full', 'antialiased', 'font-sans', fontSans.variable, fontMono.variable)}
+    >
       <body className="flex min-h-full flex-col">
-        <Navbar />
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Navbar />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

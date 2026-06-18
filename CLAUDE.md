@@ -3,6 +3,15 @@
 
 > For questions about Claude Code configuration (hooks, MCP, skills, agents, settings), use the `claude-code-guide` agent type — it has up-to-date knowledge of Claude Code internals.
 
+## Documentation Sources
+
+Before implementing against any library or framework, consult docs in this priority order — never answer from training memory for version-sensitive APIs:
+
+1. **Next.js 16** → `next-devtools` MCP (`nextjs_docs` + `nextjs-docs://llms-index`). Read the index first, then fetch the exact path.
+2. **shadcn/ui** → `shadcn` skill / MCP.
+3. **Any other library** (SQLAlchemy, FastAPI, Alembic, httpx, Pydantic, …) → **Context7** (`resolve-library-id` → `query-docs`).
+4. **Fallback** (no MCP coverage, or MCP unavailable) → `WebFetch` / `WebSearch`; for Next.js, the version-matched files in `frontend/node_modules/next/dist/docs/` are the offline source of truth and win on any conflict.
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
@@ -38,7 +47,7 @@ Commit discipline: remind the developer to commit at logical checkpoints — whe
 | Package Manager (frontend) | Bun |
 | Database | PostgreSQL + Redis (cache) |
 | AI/ML | Scikit-learn → Hugging Face Transformers |
-| External API | Shikimori API (русские названия, СНГ-аудитория) |
+| External API | Shikimori API (Russian titles, CIS audience) |
 | Infrastructure | Docker + docker-compose |
 | CI/CD | GitHub Actions |
 | Testing | Pytest (backend), Jest + Cypress (frontend) |
@@ -58,9 +67,13 @@ Microservices in a monorepo:
 |---|---|---|
 | 1 | Planning: Shikimori API research, project structure, repo setup | **Done** |
 | 2 | Backend MVP: /survey and /recommend endpoints, Shikimori integration | **Done** |
-| 3 | Frontend MVP: Next.js survey form + recommendations page | **Current** |
+| 3 | Frontend MVP: Next.js survey form + recommendations page, light/dark theming | **Current** |
 | 4 | Testing + launch: deploy, community feedback | Planned |
-| 5 | Extensions: JWT auth, ML model, WebSocket chat, mobile | Future |
+| 5 | Extensions: JWT auth, ML model, WebSocket chat, conversational AI, mobile | Future |
+
+**AI companion (chibi guide)** — the embodied form of the brand's "friend": an interactive chibi mascot that reacts to hovers, pulls faces, and drops periodic text popups, acting as the on-site guide. Planned **after the conversational-AI layer lands** (Stage 5) since it shares that AI plumbing. Until then its personality is carried by color, copy, and micro-interactions — see `frontend/CLAUDE.md` → Design Direction (Signature, "arrives in layers").
+
+**Custom themes** — the MVP ships only light/dark. A later feature lets users pick/customize their own theme (the deferred "mood colorways" idea — each colorway repainting the whole surface — folds in here). Planned once the core app is solid; not part of Stage 3.
 
 ## Future Modules (Roadmap)
 

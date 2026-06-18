@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { Genre, GenreKind } from '@/types/genre'
 import { SurveyFormData } from '@/types/survey'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Heart, HeartCrack, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { ComponentProps, useMemo } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
@@ -33,10 +34,10 @@ const STATE_BG: Record<GenreState, NonNullable<ComponentProps<typeof Button>['va
   neutral: 'outline',
 }
 
-const STATE_ICONS: Record<GenreState, string> = {
-  prefer: '❤️',
-  avoid: '💀',
-  neutral: '💀', // neutral uses '💀' as hidden placeholder to enable smooth opacity transition
+const STATE_MARKER: Record<GenreState, { Icon: typeof Heart; className: string }> = {
+  prefer: { Icon: Heart, className: 'fill-current text-green-600 dark:text-green-400' },
+  avoid: { Icon: HeartCrack, className: 'text-red-600 dark:text-red-400' },
+  neutral: { Icon: Heart, className: '' }, // neutral marker stays hidden via opacity-0
 }
 
 const KIND_LABELS: Record<GenreKind, string> = {
@@ -118,15 +119,20 @@ export default function SurveyForm({ survey, genres, isCreate }: SurveyFormProps
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="relative flex flex-col gap-10">
-      <div className="absolute top-0 right-0 flex gap-3 text-sm font-semibold tabular-nums">
+      <div className="text-muted-foreground absolute top-0 right-0 flex gap-3 text-sm font-semibold tabular-nums">
         <span
           className={cn(
-            preferGenres.length > preferGenresLimit ? 'text-destructive' : 'text-muted-foreground'
+            'flex items-center gap-1',
+            preferGenres.length > preferGenresLimit && 'text-destructive'
           )}
         >
-          ❤️ {preferGenres.length}/{preferGenresLimit}
+          <Heart className="size-3.5 fill-current text-green-600 dark:text-green-400" />
+          {preferGenres.length}/{preferGenresLimit}
         </span>
-        <span className="text-muted-foreground">💀 {avoidGenres.length}</span>
+        <span className="flex items-center gap-1">
+          <HeartCrack className="size-3.5 text-red-600 dark:text-red-400" />
+          {avoidGenres.length}
+        </span>
       </div>
       {genresByKind.map(({ kind, genres: kindGenres }) => (
         <div key={kind} className="flex flex-col gap-3">
@@ -136,23 +142,23 @@ export default function SurveyForm({ survey, genres, isCreate }: SurveyFormProps
           <ul className="flex flex-wrap gap-2">
             {kindGenres.map((genre) => {
               const state = getGenreState(genre.id)
+              const { Icon: Marker, className: markerClass } = STATE_MARKER[state]
               return (
                 <li key={genre.id}>
                   <Button
-                    className="relative"
+                    className="relative transition-transform hover:-translate-y-0.5 hover:scale-105"
                     type="button"
                     variant={STATE_BG[state]}
                     onClick={() => toggleGenre(genre.id)}
                   >
                     {genre.name}
-                    <span
+                    <Marker
                       className={cn(
-                        'absolute -top-1 -right-2 rotate-20 transition-opacity duration-300',
+                        'absolute -top-1.5 -right-2 size-4 rotate-12 transition-opacity duration-300',
+                        markerClass,
                         state === 'neutral' ? 'opacity-0' : 'opacity-100'
                       )}
-                    >
-                      {STATE_ICONS[state]}
-                    </span>
+                    />
                   </Button>
                 </li>
               )
@@ -169,7 +175,13 @@ export default function SurveyForm({ survey, genres, isCreate }: SurveyFormProps
       </div>
 
       <div>
-        <Button type="submit" className="ml-auto flex" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          size="lg"
+          className="ml-auto flex gap-2 px-6 font-bold"
+          disabled={isSubmitting}
+        >
+          <Sparkles className="size-4" />
           {isCreate ? 'Find my destiny' : 'Update preferences'}
         </Button>
       </div>
