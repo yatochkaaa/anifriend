@@ -9,7 +9,7 @@ import { saveToken } from '@/lib/actions/auth'
 import { createUser } from '@/lib/api/auth'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar as CalendarIcon } from 'lucide-react'
+import { ArrowRight, Calendar as CalendarIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -160,8 +160,13 @@ export default function SignupForm() {
 
       {errors.root && <p className="text-destructive text-sm">{errors.root.message}</p>}
 
-      <Button type="submit" className="ml-auto flex" disabled={isSubmitting}>
-        Join
+      <Button
+        type="submit"
+        size="lg"
+        className="ml-auto flex gap-2 px-6 font-bold"
+        disabled={isSubmitting}
+      >
+        Join the club <ArrowRight className="size-4" />
       </Button>
     </form>
   )
