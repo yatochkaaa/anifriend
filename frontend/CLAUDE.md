@@ -69,30 +69,30 @@ frontend/
 
 ## Design Direction
 
-**Concept: "Companion-led warmth".** AniFriend's personality is a slightly goofy, emotional anime guide — a friend who pulls faces, cheers you on, and hands you anime that match your mood. The product gives the user warmth, fun, and a little silliness so they can switch off and feel something. Tone: playful, bright, genki — never tiring.
+**Concept: "Companion-led warmth".** AniFriend's personality is a slightly goofy, emotional anime guide — a friend who pulls faces, cheers you on, and hands you anime that match your mood. The product gives the user warmth, fun, and a little silliness so they can switch off and feel something. **Style keywords: energetic, fun, playful, modern** — always carrying anime + comedy/humor in the copy and micro-interactions. Tone: bright, genki — never tiring.
 
-**The discipline that keeps "fun" from turning into "garish"** (the real risk of this brief): keep a calm, warm canvas and spend color on accents, motion, the character, and copy — not on every surface. One accent leads per view (driven by the active mood); the rest stays quiet. This is how playful brands stay premium (Duolingo/Discord energy, not a flashing banner). If a view feels loud everywhere, it's wrong.
+**Color is allowed to be bold.** The palette is intentionally bright and multicolor — pink, green, yellow — not a single trendy accent. The one hard rule that stays is **readability**: text must keep its contrast on every accent (see Quality floor). "Garish" is avoided by tuning chroma and text contrast, not by banning color.
 
 **Don't default.** Avoid the stock AI looks: cream + serif + terracotta; near-black + one acid accent; broadsheet hairlines. Our warmth comes from a curated multicolor anime palette + an expressive character, not from a single trendy accent.
 
-**Themes** — ship both **light** and **dark** (Stage 3, Frontend MVP). Tokens are theme-aware; the multicolor accents are shared, tuned to glow on dark and sing on light.
+**Themes — light & dark (MVP).** Two brightnesses now: light (contrasty pink-grey canvas + white cards) and dark (near-black). `next-themes` (`attribute="class"`, system default) drives it via `ModeToggle`. The richer **mood-driven colorways** (each mood repainting the whole surface) are **deferred to a future "custom themes" feature** — see root `CLAUDE.md` roadmap.
 
-**Color** — mid-bright, pleasant anime/Japanese hues; saturated enough to feel genki, softened so nothing stings the eye.
-- Light: `Cream #FFF8F2` canvas · `Cloud #FFFFFF` surface · `Sumi #2B2533` text · `Mist #8A8398` secondary
-- Dark: `Night #1E1A2A` canvas · `Slate #2A2538` surface · `Paper #F4EFF7` text · `Haze #9A93AC` secondary
-- Mood/accent spectrum (shared, one leads at a time): `Sakura #FF8FB1` · `Sky #5FC9E8` · `Sun #FFC24B` · `Matcha #8BD17C` · `Ube #A98BE8`
+**Color** — one bold, playful multicolor palette; light & dark share the accents (defined in `app/globals.css`):
+- Primary `oklch(0.58 0.21 3)` — deep raspberry-pink for CTAs with **white text** (4.8:1, passes AA; the brighter `0.686` looked nicer but failed white-on-pink at 3.1:1).
+- Secondary `oklch(0.808 0.240 136)` — genki green · Accent `oklch(0.838 0.171 83)` — sunny yellow.
+- Light: canvas `oklch(0.971 0.014 343)` (soft pink-grey) + white cards + dark-plum ink `oklch(0.257 0.086 281)`. Dark: near-black `oklch(0.170 0.006 286)` + light ink.
+- Focus ring = primary; soft pink shadows; `radius: 1rem` (rounded, friendly).
 
-**Type** — all four ship Latin + Cyrillic (critical for the CIS audience):
-- **Unbounded** — display; bouncy geometric, big and with restraint
-- **Onest** — body; Cyrillic-first grotesque, clean and friendly
-- **Caveat** — the companion's voice *only*; handwritten, used for the character's speech bubbles / popups so its "friend's note" feel never bleeds into UI chrome
-- **JetBrains Mono** — utility: data and labels ("92% match", episodes, ratings)
+**Type** — Latin + Cyrillic (critical for the CIS audience; Cyrillic must be in `subsets`):
+- **Nunito** — body / UI; rounded, friendly grotesque.
+- **Fira Code** — utility: data and labels ("92% match", episodes, ratings).
+- Deferred brand layers: a display face and a handwritten **companion voice** font — add when the companion/custom-theme work lands.
 
-**Layout** — a conversational vertical flow, not a dense catalog grid. The hero is a question from the guide + an interactive mood picker (the page's thesis). Recommendation cards read as a "note from a friend" with the AI's "why this fits you" reasoning, not a metadata row.
+**Layout** — a conversational vertical flow, not a dense catalog grid. The hero is a warm question from the guide leading into the survey, not a generic value-prop block. Recommendation cards read as a "note from a friend" with the AI's "why this fits you" reasoning, not a metadata row.
 
 **Signature — a companion that arrives in layers.** The personality ships before its body does:
-1. **Voice & color first** (MVP) — handwritten popups, mood-driven multicolor, playful hover micro-interactions.
-2. **Embodied chibi later** — once the conversational-AI layer is live (it shares that AI plumbing): an interactive chibi guide that reacts to hovers, pulls faces, and drops the occasional text bubble. It becomes the brand's one memorable element; everything else stays quiet so it can be loud. Roadmap lives in root `CLAUDE.md`.
+1. **Voice & color first** (MVP) — handwritten popups, bright multicolor, playful hover micro-interactions.
+2. **Embodied chibi later** — once the conversational-AI layer is live (it shares that AI plumbing): an interactive chibi guide that reacts to hovers, pulls faces, and drops the occasional text bubble. It becomes the brand's one memorable, embodied element. Roadmap lives in root `CLAUDE.md`.
 
 **Motion** — playful, small, intentional: card hover wobble, popup pop-in, the eventual character's expressions. `prefers-reduced-motion` disables the character's idle motion and ambient transitions.
 

@@ -73,6 +73,8 @@ Microservices in a monorepo:
 
 **AI companion (chibi guide)** — the embodied form of the brand's "friend": an interactive chibi mascot that reacts to hovers, pulls faces, and drops periodic text popups, acting as the on-site guide. Planned **after the conversational-AI layer lands** (Stage 5) since it shares that AI plumbing. Until then its personality is carried by color, copy, and micro-interactions — see `frontend/CLAUDE.md` → Design Direction (Signature, "arrives in layers").
 
+**Custom themes** — the MVP ships only light/dark. A later feature lets users pick/customize their own theme (the deferred "mood colorways" idea — each colorway repainting the whole surface — folds in here). Planned once the core app is solid; not part of Stage 3.
+
 ## Future Modules (Roadmap)
 
 ### 2. Anime Fanfic Generator with Collaborative Editing
