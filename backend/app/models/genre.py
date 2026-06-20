@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import Base, IntrospectedEnum, int_pk, int_uniq
 
 if typing.TYPE_CHECKING:
-    from . import SurveyGenre
+    from . import Anime, SurveyGenre
 
 
 class GenreKindEnum(StrEnum):
@@ -27,3 +27,6 @@ class Genre(Base):
     kind: Mapped[GenreKindEnum] = mapped_column(IntrospectedEnum(GenreKindEnum))
 
     surveys: Mapped[list["SurveyGenre"]] = relationship(back_populates="genre")
+    animes: Mapped[list["Anime"]] = relationship(
+        secondary="anime_genres", back_populates="genres"
+    )

@@ -1,3 +1,5 @@
+from .anime import Anime
+from .anime_genre import anime_genres
 from .genre import Genre, GenreKindEnum
 from .survey import Survey
 from .survey_anime import SurveyAnime
