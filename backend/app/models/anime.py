@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base, int_pk, int_uniq
 
 if typing.TYPE_CHECKING:
-    from . import AnimeSynonym, Genre, Studio
+    from . import AnimeSynonym, Genre, Studio, Survey, WatchedAnime
 
 
 class Anime(Base):
@@ -47,6 +47,10 @@ class Anime(Base):
     studios: Mapped[list["Studio"]] = relationship(
         secondary="anime_studios", back_populates="animes"
     )
+    surveys: Mapped[list["Survey"]] = relationship(
+        secondary="survey_animes", back_populates="animes"
+    )
     synonyms: Mapped[list["AnimeSynonym"]] = relationship(
         back_populates="anime", cascade="all, delete-orphan"
     )
+    watched_entries: Mapped[list["WatchedAnime"]] = relationship(back_populates="anime")

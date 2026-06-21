@@ -6,5 +6,5 @@ anime_studios = Table(
     "anime_studios",
     Base.metadata,
     Column("anime_id", ForeignKey("animes.id", ondelete="CASCADE"), primary_key=True),
-    Column("studio_id", ForeignKey("studios.id"), primary_key=True),
+    Column("studio_id", ForeignKey("studios.id", ondelete="CASCADE"), primary_key=True),
 )

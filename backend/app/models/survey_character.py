@@ -17,6 +17,6 @@ class SurveyCharacter(Base):
     survey_id: Mapped[int] = mapped_column(
         ForeignKey("surveys.id", ondelete="CASCADE"), primary_key=True
     )
-    shikimori_character_id: Mapped[int] = mapped_column(primary_key=True)
+    character_id: Mapped[int] = mapped_column(primary_key=True)
 
     survey: Mapped["Survey"] = relationship(back_populates="characters")
