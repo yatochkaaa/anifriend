@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.main import api_v1_router
 from app.core.config import settings
-from app.integrations.shikimori import ShikimoriClient
+from app.integrations import ShikimoriClient
 
 
 @asynccontextmanager
