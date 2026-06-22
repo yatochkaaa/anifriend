@@ -68,6 +68,16 @@ class MalAnime(BaseModel):
     rating: str | None = None
     studios: list[MalStudio] = []
 
+    @field_validator("start_date", "end_date", mode="before")
+    @classmethod
+    def _date_or_none(cls, v) -> date | None:
+        if isinstance(v, str):
+            try:
+                return date.fromisoformat(v)
+            except ValueError:
+                return None
+        return None
+
 
 class MalClient:
     URL = settings.MAL_API_URL
