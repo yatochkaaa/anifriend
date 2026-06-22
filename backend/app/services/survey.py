@@ -50,9 +50,9 @@ def gather_survey_read_dto(
 def gather_survey_read_dto_from_orm(db_survey: Survey) -> SurveyReadDTO:
     genres_prefer = [genre.genre_id for genre in db_survey.genres if genre.is_liked]
     genres_avoid = [genre.genre_id for genre in db_survey.genres if not genre.is_liked]
-    animes_prefer = [anime.shikimori_anime_id for anime in db_survey.animes]
+    animes_prefer = [anime.id for anime in db_survey.animes]
     characters_prefer = [
-        character.shikimori_character_id for character in db_survey.characters
+        survey_character.character_id for survey_character in db_survey.characters
     ]
 
     return SurveyReadDTO(
