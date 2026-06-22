@@ -32,10 +32,7 @@ async def add_survey(session: AsyncSession, dto: SurveyCreateDTO) -> Survey:
     db_animes = list(animes_result.scalars())
     survey = Survey(
         user_id=dto["user_id"],
-        genres=[
-            SurveyGenre(genre_id=genre["genre_id"], is_liked=genre["is_liked"])
-            for genre in dto["genres"]
-        ],
+        genres=[SurveyGenre(**genre) for genre in dto["genres"]],
         animes=db_animes,
     )
 
@@ -68,10 +65,7 @@ async def modify_survey(session: AsyncSession, dto: SurveyUpdateDTO) -> Survey |
     if db_survey is None:
         return None
 
-    db_survey.genres = [
-        SurveyGenre(genre_id=genre["genre_id"], is_liked=genre["is_liked"])
-        for genre in dto["genres"]
-    ]
+    db_survey.genres = [SurveyGenre(**genre) for genre in dto["genres"]]
     db_survey.animes = db_animes
 
     await session.flush()
