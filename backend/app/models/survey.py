@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import Base, int_pk
 
 if typing.TYPE_CHECKING:
-    from . import Anime, SurveyCharacter, SurveyGenre, User
+    from . import Anime, SurveyGenre, User
 
 
 class Survey(Base):
@@ -21,9 +21,6 @@ class Survey(Base):
 
     animes: Mapped[list["Anime"]] = relationship(
         secondary="survey_animes", back_populates="surveys"
-    )
-    characters: Mapped[list["SurveyCharacter"]] = relationship(
-        back_populates="survey", cascade="all, delete-orphan"
     )
     genres: Mapped[list["SurveyGenre"]] = relationship(
         back_populates="survey", cascade="all, delete-orphan"

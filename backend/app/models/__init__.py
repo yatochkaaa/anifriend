@@ -6,7 +6,6 @@ from .genre import Genre
 from .studio import Studio
 from .survey import Survey
 from .survey_anime import survey_animes
-from .survey_character import SurveyCharacter
 from .survey_genre import SurveyGenre
 from .user import User
 from .watched_anime import WatchedAnime
