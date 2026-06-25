@@ -18,7 +18,7 @@ class UserPasswordMixin:
 class UserBase(BaseModel):
     email: EmailStr
     username: str
-    date_of_birth: date | None = None
+    date_of_birth: date
 
 
 class UserCreate(UserPasswordMixin, UserBase):

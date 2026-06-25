@@ -9,6 +9,7 @@ export const getRecommendations = async (): Promise<Anime[]> => {
       Authorization: `Bearer ${token}`,
     },
   })
+
   if (!res.ok) throw new Error('Failed to fetch recommendations')
 
   return res.json()

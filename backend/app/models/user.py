@@ -20,7 +20,7 @@ class User(Base):
     email: Mapped[str_uniq]
     username: Mapped[str_col]
     hashed_password: Mapped[str]
-    date_of_birth: Mapped[date | None]
+    date_of_birth: Mapped[date]
     is_active: Mapped[bool] = mapped_column(default=True)
 
     survey: Mapped["Survey | None"] = relationship(

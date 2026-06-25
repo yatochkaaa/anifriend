@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { createSurvey, updateSurvey } from '@/lib/actions/survey'
 import { cn } from '@/lib/utils'
 import { Genre } from '@/types/genre'
-import { SurveyFormData } from '@/types/survey'
+import { SurveyPayload } from '@/types/survey'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Heart, HeartCrack, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -13,13 +13,13 @@ import { useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 
 interface SurveyFormProps {
-  survey: SurveyFormData
+  survey: SurveyPayload
   genres: Genre[]
   isCreate: boolean
 }
 
 const formSchema = z.object({
-  genres: z.array(z.object({ id: z.number(), isLiked: z.boolean() })),
+  genres: z.array(z.object({ id: z.number(), is_liked: z.boolean() })),
   animes: z.array(z.int()),
 })
 
@@ -64,10 +64,10 @@ export default function SurveyForm({ survey, genres, isCreate }: SurveyFormProps
     const curGenre = getUserGenre(genreId)
 
     if (curGenre) {
-      if (curGenre.isLiked) {
+      if (curGenre.is_liked) {
         setValue(
           'genres',
-          userGenres.map((ug) => (ug.id !== genreId ? ug : { ...ug, isLiked: false }))
+          userGenres.map((ug) => (ug.id !== genreId ? ug : { ...ug, is_liked: false }))
         )
       } else {
         setValue(
@@ -76,7 +76,7 @@ export default function SurveyForm({ survey, genres, isCreate }: SurveyFormProps
         )
       }
     } else {
-      setValue('genres', [...userGenres, { id: genreId, isLiked: true }])
+      setValue('genres', [...userGenres, { id: genreId, is_liked: true }])
     }
   }
 
@@ -99,11 +99,11 @@ export default function SurveyForm({ survey, genres, isCreate }: SurveyFormProps
       <div className="text-muted-foreground absolute top-0 right-0 flex gap-3 text-sm font-semibold tabular-nums">
         <span className="flex items-center gap-1">
           <Heart className="size-3.5 fill-current text-green-600 dark:text-green-400" />
-          {userGenres.filter((g) => g.isLiked).length}
+          {userGenres.filter((g) => g.is_liked).length}
         </span>
         <span className="flex items-center gap-1">
           <HeartCrack className="size-3.5 text-red-600 dark:text-red-400" />
-          {userGenres.filter((g) => !g.isLiked).length}
+          {userGenres.filter((g) => !g.is_liked).length}
         </span>
       </div>
 
@@ -114,7 +114,7 @@ export default function SurveyForm({ survey, genres, isCreate }: SurveyFormProps
         <ul className="flex flex-wrap gap-2">
           {genres.map(({ id, name }) => {
             const curGenre = getUserGenre(id)
-            const state = curGenre?.isLiked ?? null
+            const state = curGenre?.is_liked ?? null
             const { Icon: Marker, className: markerClass } = STATE_MARKER.get(state)!
             return (
               <li key={id}>

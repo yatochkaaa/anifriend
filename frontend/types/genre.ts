@@ -1,6 +1,3 @@
-export type GenreKind = 'demographic' | 'genre' | 'theme'
+import { components } from '@/types/api'
 
-export interface Genre {
-  id: number
-  name: string
-}
+export type Genre = components['schemas']['GenreRead']

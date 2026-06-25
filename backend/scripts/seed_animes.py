@@ -62,7 +62,7 @@ async def seed_animes() -> None:
             mal_client = MalClient(client)
             offset = 0
 
-            while offset < 500:
+            while offset < 5000:
                 mal_animes = await mal_client.list_ranking(offset=offset)
 
                 if not len(mal_animes):

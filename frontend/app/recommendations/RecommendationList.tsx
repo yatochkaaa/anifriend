@@ -50,9 +50,9 @@ export default function RecommendationList({ animes }: RecommendationListProps) 
         <li key={anime.id}>
           <Card className="group gap-0 overflow-hidden py-0 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
             <div className="relative aspect-80/113 w-full overflow-hidden">
-              {anime.poster?.main_url ? (
+              {anime.poster_url ? (
                 <Image
-                  src={anime.poster.main_url}
+                  src={anime.poster_url}
                   alt={anime.name}
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"

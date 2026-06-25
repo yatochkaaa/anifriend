@@ -1,33 +1,12 @@
-export interface Token {
-  accessToken: string
-  tokenType: string
-}
+import { components } from '@/types/api'
 
-export interface TokenResponse {
-  access_token: string
-  token_type: string
-}
+export type Token = components['schemas']['Token']
+export type UserCreate = components['schemas']['UserCreate']
 
 export interface TokenData {
-  sub: string,
-  username: string,
-  exp: number,
-}
-
-export interface UserCreate {
-  email: string
+  sub: string
   username: string
-  password: string
-  password_repeat: string
-  date_of_birth: string // YYYY-MM-DD
-}
-
-export interface UserCreateFormData {
-  email: string
-  username: string
-  password: string
-  passwordRepeat: string
-  dateOfBirth: Date
+  exp: number
 }
 
 export interface UserLogin {
