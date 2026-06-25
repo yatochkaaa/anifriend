@@ -1,9 +1,13 @@
-export interface SurveyPayload {
-  genres_prefer: number[]
-  genres_avoid: number[]
-  animes_prefer: number[]
-  characters_prefer: number[]
+export interface SurveyGenrePayload {
+  id: number
+  is_liked: boolean
 }
+
+export interface SurveyPayload {
+  genres: SurveyGenrePayload[]
+  animes: number[]
+}
+
 export interface SurveyRead extends SurveyPayload {
   id: number
   user_id: number
@@ -11,11 +15,14 @@ export interface SurveyRead extends SurveyPayload {
   updated_at: string
 }
 
+export interface SurveyGenreFormData {
+  id: number
+  isLiked: boolean
+}
+
 export interface SurveyFormData {
-  genresPrefer: number[]
-  genresAvoid: number[]
-  animesPrefer: number[]
-  charactersPrefer: number[]
+  genres: SurveyGenreFormData[]
+  animes: number[]
 }
 
 export interface Survey extends SurveyFormData {

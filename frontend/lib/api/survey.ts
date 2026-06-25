@@ -16,10 +16,8 @@ export async function getSurvey(): Promise<Survey | null> {
   return {
     id: survey.id,
     userId: survey.user_id,
-    genresPrefer: survey.genres_prefer,
-    genresAvoid: survey.genres_avoid,
-    animesPrefer: survey.animes_prefer,
-    charactersPrefer: survey.characters_prefer,
+    genres: survey.genres.map((g) => ({ id: g.id, isLiked: g.is_liked })),
+    animes: survey.animes,
     createdAt: survey.created_at,
     updatedAt: survey.updated_at,
   }

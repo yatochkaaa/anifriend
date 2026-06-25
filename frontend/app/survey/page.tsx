@@ -9,10 +9,8 @@ import SurveyForm from './SurveyForm'
 async function SurveyFormFeed() {
   const [survey, genres] = await Promise.all([getSurvey(), getGenres()])
   const surveyFormData: SurveyFormData = {
-    genresPrefer: survey?.genresPrefer ?? [],
-    genresAvoid: survey?.genresAvoid ?? [],
-    animesPrefer: survey?.animesPrefer ?? [],
-    charactersPrefer: survey?.charactersPrefer ?? [],
+    genres: survey?.genres ?? [],
+    animes: survey?.animes ?? [],
   }
 
   return <SurveyForm survey={surveyFormData} genres={genres} isCreate={!Boolean(survey?.id)} />

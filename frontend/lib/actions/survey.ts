@@ -8,10 +8,8 @@ export const createSurvey = async (survey: SurveyFormData): Promise<Survey> => {
   const token = cookieStore.get('access_token')?.value
 
   const payload: SurveyPayload = {
-    genres_prefer: survey.genresPrefer,
-    genres_avoid: survey.genresAvoid,
-    animes_prefer: survey.animesPrefer,
-    characters_prefer: survey.charactersPrefer,
+    genres: survey.genres.map((g) => ({ id: g.id, is_liked: g.isLiked })),
+    animes: survey.animes,
   }
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/survey/`, {
@@ -33,10 +31,8 @@ export const updateSurvey = async (survey: SurveyFormData): Promise<Survey> => {
   const token = cookieStore.get('access_token')?.value
 
   const payload: SurveyPayload = {
-    genres_prefer: survey.genresPrefer,
-    genres_avoid: survey.genresAvoid,
-    animes_prefer: survey.animesPrefer,
-    characters_prefer: survey.charactersPrefer,
+    genres: survey.genres.map((g) => ({ id: g.id, is_liked: g.isLiked })),
+    animes: survey.animes,
   }
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/survey/`, {
