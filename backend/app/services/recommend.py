@@ -1,43 +1,32 @@
-import asyncio
-from itertools import chain
+from typing import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.integrations.shikimori import ShikimoriAnime, ShikimoriClient
-from app.services.survey import get_survey
+from app.models.anime import Anime
+
+from .anime import get_animes
+from .survey import get_survey
 
 DEFAULT_MIN_SCORE = 7
 DEFAULT_RECOMMENDATIONS_LIMIT = 20
 
 
-def _has_avoided_genre(anime: ShikimoriAnime, genres_avoid: set[int]) -> bool:
-    return any(genre.id in genres_avoid for genre in anime.genres)
-
-
 async def get_recommendations(
     session: AsyncSession,
-    shikimori_client: ShikimoriClient,
+    *,
     user_id: int,
-    score: int = DEFAULT_MIN_SCORE,
-) -> list[ShikimoriAnime]:
+) -> Sequence[Anime]:
     survey = await get_survey(session, user_id)
 
     if survey is None:
         return []
 
-    anime_by_genre_requests = [
-        shikimori_client.get_anime_by_genre(genre_id, score)
-        for genre_id in survey["genres_prefer"]
-    ]
-    results = await asyncio.gather(*anime_by_genre_requests)
+    genre_ids = [sg.genre_id for sg in survey.genres if sg.is_liked]
+    animes = await get_animes(
+        session,
+        limit=DEFAULT_RECOMMENDATIONS_LIMIT,
+        score_min=DEFAULT_MIN_SCORE,
+        genre_ids=genre_ids,
+    )
 
-    anime_by_id = {anime.id: anime for anime in chain.from_iterable(results)}
-    genres_avoid = set(survey["genres_avoid"])
-    filtered_anime = [
-        anime
-        for anime in anime_by_id.values()
-        if not _has_avoided_genre(anime, genres_avoid)
-    ]
-    filtered_anime.sort(key=lambda anime: anime.score or 0.0, reverse=True)
-
-    return filtered_anime[:DEFAULT_RECOMMENDATIONS_LIMIT]
+    return animes

@@ -1,3 +1,4 @@
+from .anime import get_animes
 from .genre import get_genres
 from .recommend import get_recommendations
 from .survey import add_survey, get_survey, modify_survey
