@@ -31,6 +31,7 @@ class Settings(BaseSettings):
             host=self.POSTGRES_SERVER,
             port=self.POSTGRES_PORT,
             path=self.POSTGRES_DB,
+            query="sslmode=require&channel_binding=require"
         )
 
 
