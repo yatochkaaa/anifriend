@@ -9,6 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 export function parseToken(token: string): TokenData | null {
   try {
     const tokenBase64Payload = token.split('.')[1]
+    if (!tokenBase64Payload) return null
     return JSON.parse(atob(tokenBase64Payload)) ?? null
   } catch {
     return null

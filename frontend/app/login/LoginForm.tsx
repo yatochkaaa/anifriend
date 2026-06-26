@@ -36,8 +36,8 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      const { accessToken } = await login(data)
-      await saveToken(accessToken)
+      const { access_token } = await login(data)
+      await saveToken(access_token)
       const raw = searchParams.get('callbackUrl')
       const callbackUrl = raw?.startsWith('/') ? raw : '/recommendations'
       router.push(callbackUrl)

@@ -20,8 +20,6 @@ async def register(user: UserCreate, session: SessionDep) -> Token:
         email=str(user.email).lower(),
         username=user.username,
         hashed_password=hashed_password,
-        first_name=user.first_name,
-        last_name=user.last_name,
         date_of_birth=user.date_of_birth,
     )
 

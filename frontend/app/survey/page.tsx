@@ -1,18 +1,16 @@
 import { Card } from '@/components/ui/card'
 import { getGenres } from '@/lib/api/genres'
 import { getSurvey } from '@/lib/api/survey'
-import { SurveyFormData } from '@/types/survey'
+import { SurveyPayload } from '@/types/survey'
 import { Heart, HeartCrack } from 'lucide-react'
 import { Suspense } from 'react'
 import SurveyForm from './SurveyForm'
 
 async function SurveyFormFeed() {
   const [survey, genres] = await Promise.all([getSurvey(), getGenres()])
-  const surveyFormData: SurveyFormData = {
-    genresPrefer: survey?.genresPrefer ?? [],
-    genresAvoid: survey?.genresAvoid ?? [],
-    animesPrefer: survey?.animesPrefer ?? [],
-    charactersPrefer: survey?.charactersPrefer ?? [],
+  const surveyFormData: SurveyPayload = {
+    genres: survey?.genres ?? [],
+    animes: survey?.animes ?? [],
   }
 
   return <SurveyForm survey={surveyFormData} genres={genres} isCreate={!Boolean(survey?.id)} />

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 
 from app.api.deps import CurrentUserDep, SessionDep
-from app.dto import SurveyCreateDTO, SurveyUpdateDTO
+from app.dto import SurveyCreateDTO, SurveyGenreDTO, SurveyUpdateDTO
 from app.exceptions import SurveyAlreadyExistsError
 from app.schemas import SurveyCreate, SurveyRead, SurveyUpdate
 from app.services import add_survey, get_survey, modify_survey
@@ -27,10 +27,8 @@ async def create_survey(
 ) -> SurveyRead:
     dto = SurveyCreateDTO(
         user_id=current_user.id,
-        genres_prefer=survey.genres_prefer,
-        genres_avoid=survey.genres_avoid,
-        animes_prefer=survey.animes_prefer,
-        characters_prefer=survey.characters_prefer,
+        genres=[SurveyGenreDTO(**vars(genre)) for genre in survey.genres],
+        animes=survey.animes,
     )
     try:
         created_survey = await add_survey(session, dto)
@@ -50,10 +48,8 @@ async def update_survey(
 ) -> SurveyRead:
     dto = SurveyUpdateDTO(
         user_id=current_user.id,
-        genres_prefer=survey.genres_prefer,
-        genres_avoid=survey.genres_avoid,
-        animes_prefer=survey.animes_prefer,
-        characters_prefer=survey.characters_prefer,
+        genres=[SurveyGenreDTO(**vars(genre)) for genre in survey.genres],
+        animes=survey.animes,
     )
     updated_survey = await modify_survey(session, dto)
 

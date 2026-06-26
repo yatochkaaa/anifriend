@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     # 60 minutes * 24 hours * 7 days = 7 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7
     FRONTEND_HOST: str = "http://localhost:3000"
+    MAL_CLIENT_ID: str
+    MAL_API_URL: str = "https://api.myanimelist.net/v2"
     SHIKIMORI_URL: str = "https://shikimori.io/api/graphql"
 
     POSTGRES_SERVER: str
@@ -29,6 +31,7 @@ class Settings(BaseSettings):
             host=self.POSTGRES_SERVER,
             port=self.POSTGRES_PORT,
             path=self.POSTGRES_DB,
+            query="sslmode=require&channel_binding=require"
         )
 
 

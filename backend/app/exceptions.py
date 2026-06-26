@@ -4,3 +4,6 @@ class UserAlreadyExistsError(Exception):
 
 class SurveyAlreadyExistsError(Exception):
     pass
+
+class MalRateLimitError(Exception):
+    pass

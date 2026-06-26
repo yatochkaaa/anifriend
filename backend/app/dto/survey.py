@@ -2,11 +2,14 @@ from datetime import datetime
 from typing import TypedDict
 
 
+class SurveyGenreDTO(TypedDict):
+    genre_id: int
+    is_liked: bool
+
+
 class SurveyBaseDTO(TypedDict):
-    genres_prefer: list[int]
-    genres_avoid: list[int]
-    animes_prefer: list[int]
-    characters_prefer: list[int]
+    genres: list[SurveyGenreDTO]
+    animes: list[int]
 
 
 class SurveyCreateDTO(SurveyBaseDTO):

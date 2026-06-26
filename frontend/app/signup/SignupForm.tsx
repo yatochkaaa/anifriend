@@ -9,6 +9,7 @@ import { saveToken } from '@/lib/actions/auth'
 import { createUser } from '@/lib/api/auth'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { format } from 'date-fns'
 import { ArrowRight, Calendar as CalendarIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Controller, useForm } from 'react-hook-form'
@@ -30,12 +31,12 @@ const formSchema = z
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/,
         'Password must contain at least one uppercase letter, one lowercase letter, and one number'
       ),
-    passwordRepeat: z.string().min(1, 'Please repeat your password'),
-    dateOfBirth: z.date({ error: 'Please select your date of birth' }),
+    password_repeat: z.string().min(1, 'Please repeat your password'),
+    date_of_birth: z.date({ error: 'Please select your date of birth' }),
   })
-  .refine((data) => data.password === data.passwordRepeat, {
+  .refine((data) => data.password === data.password_repeat, {
     error: "Passwords don't match",
-    path: ['passwordRepeat'],
+    path: ['password_repeat'],
   })
 
 type SignupFormValues = z.infer<typeof formSchema>
@@ -54,15 +55,16 @@ export default function SignupForm() {
       email: '',
       username: '',
       password: '',
-      passwordRepeat: '',
-      dateOfBirth: undefined,
+      password_repeat: '',
+      date_of_birth: undefined,
     },
   })
 
   const onSubmit = async (data: SignupFormValues) => {
     try {
-      const { accessToken } = await createUser(data)
-      await saveToken(accessToken)
+      const payload = { ...data, date_of_birth: format(data.date_of_birth, 'yyyy-MM-dd') }
+      const { access_token } = await createUser(payload)
+      await saveToken(access_token)
       router.push('/survey')
     } catch (e) {
       setError('root', { message: e instanceof Error ? e.message : 'Registration failed' })
@@ -108,20 +110,20 @@ export default function SignupForm() {
           {errors.password && <FieldError errors={[errors.password]} />}
         </Field>
 
-        <Field data-invalid={!!errors.passwordRepeat}>
+        <Field data-invalid={!!errors.password_repeat}>
           <FieldLabel htmlFor="password-repeat">Repeat password</FieldLabel>
           <Input
-            {...register('passwordRepeat')}
+            {...register('password_repeat')}
             id="password-repeat"
             type="password"
             placeholder="One more time, just to be sure"
-            aria-invalid={!!errors.passwordRepeat}
+            aria-invalid={!!errors.password_repeat}
           />
-          {errors.passwordRepeat && <FieldError errors={[errors.passwordRepeat]} />}
+          {errors.password_repeat && <FieldError errors={[errors.password_repeat]} />}
         </Field>
 
         <Controller
-          name="dateOfBirth"
+          name="date_of_birth"
           control={control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>

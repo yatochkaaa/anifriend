@@ -18,9 +18,7 @@ class UserPasswordMixin:
 class UserBase(BaseModel):
     email: EmailStr
     username: str
-    first_name: str | None = None
-    last_name: str | None = None
-    date_of_birth: date | None = None
+    date_of_birth: date
 
 
 class UserCreate(UserPasswordMixin, UserBase):
@@ -38,6 +36,4 @@ class UserRead(UserBase):
 class UserUpdate(BaseModel):
     email: EmailStr | None = None
     username: str | None = None
-    first_name: str | None = None
-    last_name: str | None = None
     date_of_birth: date | None = None

@@ -1,14 +1,6 @@
-import { Token, TokenResponse, UserCreate, UserCreateFormData, UserLogin } from '@/types/auth'
+import { Token, UserCreate, UserLogin } from '@/types/auth'
 
-export const createUser = async (formData: UserCreateFormData): Promise<Token> => {
-  const payload: UserCreate = {
-    email: formData.email,
-    username: formData.username,
-    password: formData.password,
-    password_repeat: formData.passwordRepeat,
-    date_of_birth: formData.dateOfBirth.toLocaleDateString('en-CA'),
-  }
-
+export const createUser = async (payload: UserCreate): Promise<Token> => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -20,8 +12,7 @@ export const createUser = async (formData: UserCreateFormData): Promise<Token> =
     throw new Error(detail ?? 'Failed to register user')
   }
 
-  const { access_token, token_type }: TokenResponse = await res.json()
-  return { accessToken: access_token, tokenType: token_type }
+  return res.json()
 }
 
 export const login = async (formData: UserLogin): Promise<Token> => {
@@ -29,17 +20,17 @@ export const login = async (formData: UserLogin): Promise<Token> => {
     username: formData.username,
     password: formData.password,
   })
+
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: params,
   })
 
-    if (!res.ok) {
+  if (!res.ok) {
     const { detail } = await res.json()
     throw new Error(detail ?? 'Failed to login user')
   }
 
-  const { access_token, token_type }: TokenResponse = await res.json()
-  return { accessToken: access_token, tokenType: token_type }
+  return res.json()
 }
