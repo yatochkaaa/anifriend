@@ -46,7 +46,7 @@ def convert_anime_mal_to_db(
 
 
 async def seed_animes() -> None:
-    animes: list[MalAnime] = []
+    animes_map: dict[int, MalAnime] = {}
     genres_map: dict[int, Genre] = {}
     studios_map: dict[int, Studio] = {}
 
@@ -58,6 +58,9 @@ async def seed_animes() -> None:
         for db_studio in db_studios.scalars():
             studios_map[db_studio.mal_id] = db_studio
 
+        existing = await session.execute(select(Anime.mal_id))
+        existing_mal_ids = set(existing.scalars())
+
         async with AsyncClient() as client:
             mal_client = MalClient(client)
             offset = 0
@@ -68,8 +71,12 @@ async def seed_animes() -> None:
                 if not len(mal_animes):
                     break
 
-                animes += mal_animes
                 for mal_anime in mal_animes:
+                    if mal_anime.id in existing_mal_ids:
+                        continue
+
+                    animes_map[mal_anime.id] = mal_anime
+
                     for mal_genre in mal_anime.genres:
                         if mal_genre.id not in genres_map:
                             genres_map[mal_genre.id] = Genre(
@@ -89,7 +96,7 @@ async def seed_animes() -> None:
             session.add(studio)
         await session.commit()
 
-        for anime in animes:
+        for anime in animes_map.values():
             db_anime = convert_anime_mal_to_db(anime, genres_map, studios_map)
             session.add(db_anime)
         await session.commit()
